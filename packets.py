@@ -115,7 +115,7 @@ class ConnectIndication(NonContainerPacket):
 class SPpdu(NonContainerPacket):
     name = "SPpdu"
     fields_desc = [
-        ShortField("session_id", '\xe1\x00'), # "This field identifies a Protocol message. The field contains a fixed value 0xE100"
+        ShortField("session_id", 0xE100), # "This field identifies a Protocol message. The field contains a fixed value 0xE100"
         ShortField("context_id", 0),
     ]
 
