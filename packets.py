@@ -71,10 +71,15 @@ class ManagedObjectId(NonContainerPacket):
     ]
 
 
+RelativeTimeField = IntField
+
 class EventReportArgument(NonContainerPacket):
     name = "EventReportArgument"
     fields_desc = [
         PacketField("managed_object", "", ManagedObjectId),
+        RelativeTimeField("event_time", 0),
+        OIDTypeField("event_type", 0),
+        ShortField("length", 0),
     ]
 
 
