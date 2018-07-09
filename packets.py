@@ -83,6 +83,24 @@ class EventReportArgument(NonContainerPacket):
     ]
 
 
+class AVAType(NonContainerPacket):
+    name = "AVAType"
+    fields_desc = [
+        OIDTypeField("attribute_id", 0),
+        FieldLenField("length", 0, length_of="attribute_val"),
+        StrLenField("attribute_val", "", length_from=lambda p: p.length),
+    ]
+
+
+class AttributeList(Packet):
+    name = "AttributeList"
+    fields_desc = [
+        FieldLenField("count", 0, count_of="value"),
+        FieldLenField("length", 0, length_of="value"),
+        PacketListField("value", [], AVAType, length_from=lambda p: p.length),
+    ]
+
+
 class ConnectIndication(NonContainerPacket):
     name = "ConnectIndication"
     fields_desc = [
@@ -90,6 +108,7 @@ class ConnectIndication(NonContainerPacket):
         PacketField("ROapdus", "", ROapdus),
         PacketField("ROIVapdu", "", ROIVapdu),
         PacketField("EventReportArgument", "", EventReportArgument),
+        PacketField("ConnectIndInfo", "", AttributeList),
     ]
 
 
