@@ -67,7 +67,7 @@ class ManagedObjectId(NonContainerPacket):
     name = "ManagedObjectId"
     fields_desc = [
         OIDTypeField("m_obj_class", 0),
-        PacketField("m_obj_inst", "", GlbHandle),
+        PacketField("m_obj_inst", GlbHandle(), GlbHandle),
     ]
 
 
@@ -76,7 +76,7 @@ RelativeTimeField = IntField
 class EventReportArgument(NonContainerPacket):
     name = "EventReportArgument"
     fields_desc = [
-        PacketField("managed_object", "", ManagedObjectId),
+        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
         RelativeTimeField("event_time", 0),
         OIDTypeField("event_type", 0),
         ShortField("length", 0),
@@ -123,19 +123,19 @@ class SPpdu(NonContainerPacket):
 class MDSCreateInfo(NonContainerPacket):
     name = "MDSCreateInfo"
     fields_desc = [
-        PacketField("managed_object", "", ManagedObjectId),
-        PacketField("attribute_list", "", AttributeList),
+        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
+        PacketField("attribute_list", AttributeList(), AttributeList),
     ]
 
 
 class MDSCreateEventReport(NonContainerPacket):
     name = "MDSCreateEventReport"
     fields_desc = [
-        PacketField("SPpdu", "", SPpdu),
-        PacketField("ROapdus", "", ROapdus),
-        PacketField("ROIVapdu", "", ROIVapdu),
-        PacketField("EventReportArgument", "", EventReportArgument),
-        PacketField("MDSCreateInfo", "", MDSCreateInfo),
+        PacketField("SPpdu", SPpdu(), SPpdu),
+        PacketField("ROapdus", ROapdus(), ROapdus),
+        PacketField("ROIVapdu", ROIVapdu(), ROIVapdu),
+        PacketField("EventReportArgument", EventReportArgument(), EventReportArgument),
+        PacketField("MDSCreateInfo", MDSCreateInfo(), MDSCreateInfo),
     ]
 
 
