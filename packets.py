@@ -139,6 +139,66 @@ class MDSCreateEventReport(NonContainerPacket):
     ]
 
 
+"""
+The LI field contains the length of the appended data (including all presentation data). The length
+encoding uses the following rules:
+* If the length is smaller or equal 254 bytes, LI is one byte containing the actual length.
+* If the length is greater than 254 bytes, LI is three bytes, the first being 0xff, the following two bytes
+containing the actual length.
+Examples:
+L = 15 is encoded as 0x0f
+L = 256 is encoded as {0xff,0x01,0x00}
+"""
+LIField = ShortField  # TODO
+
+
+class SessionHeader(NonContainerPacket):
+    name = "SessionHeader"
+    fields_desc = [
+        ByteEnumField("type", 0, {}), #TODO
+        LIField("length", 0),
+    ]
+
+
+class AssocReqSessionHeader(NonContainerPacket):
+    name = "AssocReqSessionHeader"
+    fields_desc = [
+        PacketField("SessionHeader", SessionHeader(), SessionHeader),
+    ]
+
+
+class AssocReqSessionData(NonContainerPacket):
+    name = "AssocReqSessionData"
+    fields_desc = [
+        StrField("data", "\x05\x08\x13\x01\x00\x16\x01\x02\x80\x00\x14\x02\x00\x02"),  # Couldn't find a definition in the PIPG, this is copied from the example on page 298
+    ]
+
+class AssocReqPresentationHeader(NonContainerPacket):
+    name = "AssocReqPresentationHeader"
+    fields_desc = [
+        # Couldn't find a definition in the PIPG, this is copied from the example on page 298
+        StrField("", ""),
+        LIField("LI", 0),
+        StrField("data", ""),
+    ]
+
+class AssocReqUserData(NonContainerPacket): # TODO
+    pass
+
+class AssocReqPresentationTrailer(NonContainerPacket): # TODO
+    pass
+
+
+class AssociationRequestMessage(NonContainerPacket):
+    name = "AssociationRequestMessage"
+    fields_desc = [
+        PacketField("AssocReqSessionHeader", AssocReqSessionHeader(), AssocReqSessionHeader),
+        PacketField("AssocReqSessionData", AssocReqSessionData(), AssocReqSessionData),
+        PacketField("AssocReqPresentationHeader", AssocReqPresentationHeader(), AssocReqPresentationHeader),
+        PacketField("AssocReqUserData", AssocReqUserData(), AssocReqUserData),
+        PacketField("AssocReqPresentationTrailer", AssocReqPresentationTrailer(), AssocReqPresentationTrailer),
+    ]
+
 
 if __name__ == '__main__':
     cieDump = '\x00\x00\x01\x00\x00\x01\x01\xc2\x00\x00\x00\x00\x01\xbc\x00#\x00\x00\x00\x00\x00\xd6\xd4\x00\r\x17\x01\xae\x00\x0b\x01\xaa\t \x00\x04\x00\x03\x00\x00\t\x86\x00\x04\x00\x01\x11M\t7\x00\x08\x06\x08\x06\x08\x00\x01\x00\x0b\xf1Z\x00\x04\x00\x00\x00\x02\xf16\x00\x04\x00\x00\x00\x00\xf2|\x00\x1a\x00\x01\x80\x00\x00\x01\x00\x12\xf1\x00\x00\x0e\x00\t\xfb\tw\xbd\n\r%\x02\xff\xff\xff\x00\xf15\x00"\x00E\x00C\x00C\x00 \x00M\x00O\x00N\x00 \x00R\x00M\x001\x005\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf1\x00\x00\x0e\x00\t\xfb\tw\xbd\n\r%\x02\xff\xff\xff\x00\xf1\x01\x00,\x00\x05\x00(\x00\x01\x00\x03]\xc0\x00\x00\x00\x02\x00\x03]\xc0\x00\x00\x00\x01\x00\x01^)\x00\x00\x00\x05\x00\x01^)\x00\x00\x00\x08\x00\x01\x825\x00\x00\t-\x00\xdc\x00\x06\x00d\x00\x01\x00\x08\x00\x0cDE22713007\x00\t\x00\x02\x00\x08\x00\x0eM8007A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x08\x00\x08 B.00.05\x00\x05\x00x\x00\x08--------\x00\x02\x00X\x00\x0eS-M4046-1701A \x00\x04\x00X\x00\x08G.01.78 \x00\x07\x00\x86\x00\x01\x00\x08\x00\x0cDE22713007\x00\t\x00\x02\x00\x08\x00\x0eM8007A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x08\x00\x08 B.00.05\x00\x05\x00x\x00\x08--------\x00\x02\x00X\x00\x0eS-M4046-1701A \x00\x04\x00X\x00\x08G.01.78 \x00\x02\x00X\x00\x0eS-M404\t(\x00\x14\x00\x08Philips\x00\x00\x07M8007A\x00\x00'
