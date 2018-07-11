@@ -9,6 +9,9 @@ ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
 class EinsteinServer(DatagramProtocol):
     """
     Handles communication with a Philips IntelliVue
+
+    Currently a demo implementation - listens for existence announcements,
+    associates, and does a one-time data request.
     """
 
     def datagramReceived(self, data, (host, port)):
