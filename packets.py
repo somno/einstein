@@ -304,6 +304,7 @@ bind_layers(ROapdus, ROIVapdu, ro_type=ROIV_APDU)
 bind_layers(ROapdus, ROERapdu, ro_type=ROER_APDU)
 bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_EVENT_REPORT)
 bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_CONFIRMED_EVENT_REPORT)
+bind_layers(RORSapdu, EventReportResult, command_type=CMD_CONFIRMED_EVENT_REPORT)
 NOM_NOTI_MDS_CREAT = 3334  # TODO RELOCATE
 bind_layers(EventReportArgument, MDSCreateInfo, event_type=NOM_NOTI_MDS_CREAT)
 # TODO bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
