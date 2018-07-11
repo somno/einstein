@@ -37,8 +37,24 @@ class ROapdus(NonContainerPacket):
     def extract_padding(self, p):
         return "", p
 
-# TODO Make this an Int Enum Field of some sort
-CMDTypeField = ShortField
+CMD_EVENT_REPORT = 0
+CMD_CONFIRMED_EVENT_REPORT = 1
+CMD_GET = 3
+CMD_SET = 4
+CMD_CONFIRMED_SET = 5
+CMD_CONFIRMED_ACTION = 7
+
+def CMDTypeField(name, default):  # PIPG-47
+    enum = {
+        CMD_EVENT_REPORT: "CMD_EVENT_REPORT",
+        CMD_CONFIRMED_EVENT_REPORT: "CMD_CONFIRMED_EVENT_REPORT",
+        CMD_GET: "CMD_GET",
+        CMD_SET: "CMD_SET",
+        CMD_CONFIRMED_SET: "CMD_CONFIRMED_SET",
+        CMD_CONFIRMED_ACTION: "CMD_CONFIRMED_ACTION",
+    }
+    return ShortEnumField(name, default, enum)
+
 
 class ROIVapdu(NonContainerPacket):
     name = "ROIVapdu"
@@ -216,7 +232,7 @@ class MDSCreateEventReport(NonContainerPacket):  # PIPG-54
     fields_desc = [
         PacketField("SPpdu", SPpdu(), SPpdu),
         PacketField("ROapdus", ROapdus(), ROapdus),
-        PacketField("ROIVapdu", ROIVapdu(), ROIVapdu),
+        PacketField("ROIVapdu", ROIVapdu(command_type=CMD_CONFIRMED_EVENT_REPORT), ROIVapdu),
         PacketField("EventReportArgument", EventReportArgument(), EventReportArgument),
         PacketField("MDSCreateInfo", MDSCreateInfo(), MDSCreateInfo),
     ]
