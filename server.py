@@ -67,8 +67,6 @@ class EinsteinServer(DatagramProtocol):
                     event_type=packets.NOM_NOTI_MDS_CREAT,
                 )
 
-                mdsceResult.show2()
-
                 self.transport.write(str(mdsceResult), (host, port))
 
             else:
