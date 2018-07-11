@@ -100,6 +100,7 @@ class EinsteinServer(DatagramProtocol):
             # TODO Implement support for Remote Operation Linked Results!
             print("ROLRSapdu, skipping")
         elif packets.ROERapdu in message:
+            # Error
             message[packets.ROERapdu].show()
         else:
             print("Unknown message!")
