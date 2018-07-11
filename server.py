@@ -59,9 +59,15 @@ class EinsteinServer(DatagramProtocol):
             remainder = roivapdu.load
 
             if roivapdu.command_type == packets.CMD_CONFIRMED_EVENT_REPORT:
-                mdscer = packets.MDSCreateEventReport()
-                mdscer.dissect(data)
-                mdscer.show()
+                print("Received MDSCreateEventReport, sending MDSCreateEventResult")
+                mdsceReport = packets.MDSCreateEventReport()
+                mdsceReport.dissect(data)
+
+                # Ok! Now to reply!
+
+                mdsceResult = packets.MDSCreateEventResult()
+                self.transport.write(str(mdsceReport), (host, port))
+
             else:
                 print("Unknown command_type in roivapdu!")
                 roivapdu.show()
