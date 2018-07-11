@@ -86,6 +86,24 @@ class RORSapdu(Packet):  # PIPG-43
     ]
 
 
+class RorlsId(NonContainerPacket):  # PIPG-44
+    name = "RorlsId"
+    fields_desc = [
+        ByteField("state", 0),  # TODO Enum
+        ByteField("count", 0),
+    ]
+
+
+class ROLRSapdu(Packet):  # PIPG-44
+    name = "ROLRSapdu"
+    fields_desc = [
+        PacketField("linked_id", RorlsId(), RorlsId),
+        ShortField("invoke_id", 0),
+        CMDTypeField("command_type", 0),
+        LenField("length", None),
+    ]
+
+
 NO_SUCH_OBJECT_CLASS = 0
 NO_SUCH_OBJECT_INSTANCE = 1
 ACCESS_DENIED = 2
@@ -355,6 +373,7 @@ bind_layers(SPpdu, ROapdus)
 bind_layers(ROapdus, RORSapdu, ro_type=RORS_APDU)
 bind_layers(ROapdus, ROIVapdu, ro_type=ROIV_APDU)
 bind_layers(ROapdus, ROERapdu, ro_type=ROER_APDU)
+bind_layers(ROapdus, ROLRSapdu, ro_type=ROLRS_APDU)
 bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_EVENT_REPORT)
 bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_CONFIRMED_EVENT_REPORT)
 bind_layers(ROIVapdu, ActionArgument, command_type=CMD_CONFIRMED_ACTION)
