@@ -66,6 +66,11 @@ class EinsteinServer(DatagramProtocol):
                 # Ok! Now to reply!
 
                 mdsceResult = packets.MDSCreateEventResult()
+                mdsceResult.RORSapdu.invoke_id = mdsceReport.ROIVapdu.invoke_id
+                mdsceResult.EventReportResult.managed_object = mdsceReport.EventReportArgument.managed_object
+
+                mdsceResult.show2()
+
                 self.transport.write(str(mdsceReport), (host, port))
 
             else:
