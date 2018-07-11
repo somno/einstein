@@ -163,6 +163,7 @@ class ManagedObjectId(NonContainerPacket):
 
 
 RelativeTimeField = IntField
+AbsoluteTimeField = IntField
 
 class EventReportArgument(Packet):
     name = "EventReportArgument"
@@ -362,6 +363,43 @@ class PollMdibDataReq(NonContainerPacket):
     ]
 
 
+class ActionResult(Packet):
+    name = "ActionResult"
+    fields_desc = [
+        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
+        OIDTypeField("action_type", 0),
+        LenField("length", None),
+    ]
+
+
+class SingleContextPoll(Packet):
+    name = "SingleContextPoll"
+    fields_desc = [
+        # FIXME
+    ]
+
+
+class PollInfoList(Packet):
+    name = "PollInfoList"
+    fields_desc = [
+        FieldLenField("count", 0, count_of="value"),
+        FieldLenField("length", 0, length_of="value"),
+        PacketListField("value", [], SingleContextPoll, length_from=lambda p: p.length),
+    ]
+
+
+class PollMdibDataReply(Packet):
+    name = "PollMdibDataReply"
+    fields_desc = [
+        ShortField("poll_number", 0),
+        RelativeTimeField("rel_time_stamp", 0),
+        AbsoluteTimeField("abs_time_stamp", 0),
+        PacketField("polled_obj_type", TYPE(), TYPE),
+        OIDTypeField("polled_attr_grp", 0),
+        PacketField("poll_info_list", PollInfoList(), PollInfoList),
+    ]
+
+
 # TODO Relocate / flesh these out
 NOM_MOC_VMO_METRIC_NU = 6
 NOM_MOC_VMS_MDS = 33
@@ -378,8 +416,10 @@ bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_EVENT_REPORT)
 bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_CONFIRMED_EVENT_REPORT)
 bind_layers(ROIVapdu, ActionArgument, command_type=CMD_CONFIRMED_ACTION)
 bind_layers(RORSapdu, EventReportResult, command_type=CMD_CONFIRMED_EVENT_REPORT)
+bind_layers(RORSapdu, ActionResult, command_type=CMD_CONFIRMED_ACTION)
 bind_layers(EventReportArgument, MDSCreateInfo, event_type=NOM_NOTI_MDS_CREAT)
 bind_layers(ActionArgument, PollMdibDataReq, action_type=NOM_ACT_POLL_MDIB_DATA)
+bind_layers(ActionResult, PollMdibDataReply, action_type=NOM_ACT_POLL_MDIB_DATA)
 # TODO bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
 
 
