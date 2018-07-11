@@ -57,7 +57,7 @@ class EinsteinServer(DatagramProtocol):
                 # Ok! Now to reply!
 
                 mdsceResult = packets.SPpdu()
-                mdsceResult = mdsceResult / packets.ROapdus(ro_type=packets.ROIV_APDU)
+                mdsceResult = mdsceResult / packets.ROapdus(ro_type=packets.RORS_APDU)
                 mdsceResult = mdsceResult / packets.RORSapdu(
                     command_type=packets.CMD_CONFIRMED_EVENT_REPORT,
                     invoke_id=message[packets.ROIVapdu].invoke_id,
