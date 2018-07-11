@@ -11,5 +11,5 @@ class SomnoDeviceDiscoveryDumper(DatagramProtocol):
         ci.show()
 
 
-reactor.listenUDP(24005, SomnoDeviceDiscoveryDumper())
+reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, SomnoDeviceDiscoveryDumper())
 reactor.run()

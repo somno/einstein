@@ -1,5 +1,8 @@
 from scapy.all import *
 
+PORT_CONNECTION_INDICATION = 24005  # PIPG-279
+PORT_PROTOCOL = 24105  # PIPG-29
+
 class NonContainerPacket(Packet):
     """
     A Packet that cannot contain other things.
