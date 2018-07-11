@@ -297,6 +297,59 @@ def MDSCreateEventResult():  # PIPG-55
     ]
 
 
+class ActionArgument(Packet):
+    name = "ActionArgument"
+    fields_desc = [
+        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
+        IntField("scope", 0),
+        OIDTypeField("action_type", 0),
+        LenField("length", None),
+    ]
+
+
+NOM_PART_OBJ = 1
+NOM_PART_SCADA = 2
+NOM_PART_EVT = 3
+NOM_PART_DIM = 4
+NOM_PART_PGRP = 6
+NOM_PART_INFRASTRUCT = 8
+
+
+def NomPartitionField(name, default):
+    enum = {
+        NOM_PART_OBJ: "NOM_PART_OBJ",
+        NOM_PART_SCADA: "NOM_PART_SCADA",
+        NOM_PART_EVT: "NOM_PART_EVT",
+        NOM_PART_DIM: "NOM_PART_DIM",
+        NOM_PART_PGRP: "NOM_PART_PGRP",
+        NOM_PART_INFRASTRUCT: "NOM_PART_INFRASTRUCT",
+    }
+    return ShortEnumField(name, default, enum)
+
+
+class TYPE(NonContainerPacket):  # PIPG-37
+    name = "TYPE"
+    fields_desc = [
+        NomPartitionField("partition", 0),
+        OIDTypeField("code", 0),
+    ]
+
+
+class PollMdibDataReq(NonContainerPacket):
+    name = "PollMdibDataReq"
+    fields_desc = [
+        ShortField("poll_number", 0),
+        PacketField("polled_obj_type", TYPE(), TYPE),
+        OIDTypeField("polled_attr_grp", 0),
+    ]
+
+
+# TODO Relocate / flesh these out
+NOM_MOC_VMO_METRIC_NU = 6
+NOM_MOC_VMS_MDS = 33
+NOM_ACT_POLL_MDIB_DATA = 3094
+NOM_NOTI_MDS_CREAT = 3334
+
 bind_layers(Nomenclature, ROapdus)
 bind_layers(SPpdu, ROapdus)
 bind_layers(ROapdus, RORSapdu, ro_type=RORS_APDU)
@@ -304,9 +357,10 @@ bind_layers(ROapdus, ROIVapdu, ro_type=ROIV_APDU)
 bind_layers(ROapdus, ROERapdu, ro_type=ROER_APDU)
 bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_EVENT_REPORT)
 bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_CONFIRMED_EVENT_REPORT)
+bind_layers(ROIVapdu, ActionArgument, command_type=CMD_CONFIRMED_ACTION)
 bind_layers(RORSapdu, EventReportResult, command_type=CMD_CONFIRMED_EVENT_REPORT)
-NOM_NOTI_MDS_CREAT = 3334  # TODO RELOCATE
 bind_layers(EventReportArgument, MDSCreateInfo, event_type=NOM_NOTI_MDS_CREAT)
+bind_layers(ActionArgument, PollMdibDataReq, action_type=NOM_ACT_POLL_MDIB_DATA)
 # TODO bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
 
 
