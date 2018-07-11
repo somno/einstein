@@ -82,6 +82,51 @@ class ROIVapdu(NonContainerPacket):
         return "", p
 
 
+class RORSapdu(NonContainerPacket):  # PIPG-43
+    name = "RORSapdu"
+    fields_desc = [
+        ShortField("invoke_id", 0),
+        CMDTypeField("command_type", 0),
+        ShortField("length", 0),
+    ]
+
+
+NO_SUCH_OBJECT_CLASS = 0
+NO_SUCH_OBJECT_INSTANCE = 1
+ACCESS_DENIED = 2
+GET_LIST_ERROR = 7
+SET_LIST_ERROR = 8
+NO_SUCH_ACTION = 9
+PROCESSING_FAILURE = 10
+INVALID_ARGUMENT_VALUE = 15
+INVALID_SCOPE = 16
+INVALID_OBJECT_INSTANCE = 17
+
+def ErrorValueField(name, default):  # PIPG-45
+    enum = {
+        NO_SUCH_OBJECT_CLASS: "NO_SUCH_OBJECT_CLASS",
+        NO_SUCH_OBJECT_INSTANCE: "NO_SUCH_OBJECT_INSTANCE",
+        ACCESS_DENIED: "ACCESS_DENIED",
+        GET_LIST_ERROR: "GET_LIST_ERROR",
+        SET_LIST_ERROR: "SET_LIST_ERROR",
+        NO_SUCH_ACTION: "NO_SUCH_ACTION",
+        PROCESSING_FAILURE: "PROCESSING_FAILURE",
+        INVALID_ARGUMENT_VALUE: "INVALID_ARGUMENT_VALUE",
+        INVALID_SCOPE: "INVALID_SCOPE",
+        INVALID_OBJECT_INSTANCE: "INVALID_OBJECT_INSTANCE",
+    }
+    return ShortEnumField(name, default, enum)
+
+
+class ROERapdu(NonContainerPacket):  # PIPG-45
+    name = "ROERapdu"
+    fields_desc = [
+        ShortField("invoke_id", 0),
+        ErrorValueField("error_value", 0),
+        ShortField("length", 0),
+    ]
+
+
 OIDTypeField = ShortField
 
 MdsContextField = ShortField

@@ -71,6 +71,11 @@ class EinsteinServer(DatagramProtocol):
             else:
                 print("Unknown command_type in roivapdu!")
                 roivapdu.show()
+        elif roapdus.ro_type == packets.ROER_APDU:
+            roerapdu = packets.ROERapdu()
+            roerapdu.dissect(remainder)
+
+            roerapdu.show()
         else:
             print("Unknown ro_type in roapdus!")
             roapdus.show()
