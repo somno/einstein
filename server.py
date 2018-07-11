@@ -96,6 +96,9 @@ class EinsteinServer(DatagramProtocol):
             else:
                 print("Unknown command_type in roivapdu!")
                 roivapdu.show()
+        elif packets.ROLRSapdu in message:
+            # TODO Implement support for Remote Operation Linked Results!
+            print("ROLRSapdu, skipping")
         elif packets.ROERapdu in message:
             message[packets.ROERapdu].show()
         else:
