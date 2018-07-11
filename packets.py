@@ -116,6 +116,16 @@ class EventReportArgument(NonContainerPacket):
     ]
 
 
+class EventReportResult(NonContainerPacket):
+    name = "EventReportResult"
+    fields_desc = [
+        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
+        RelativeTimeField("current_time", 0),
+        OIDTypeField("event_type", 0),
+        ShortField("length", 0),
+    ]
+
+
 class AVAType(NonContainerPacket):
     name = "AVAType"
     fields_desc = [
@@ -249,6 +259,15 @@ class MDSCreateEventReport(NonContainerPacket):  # PIPG-54
         PacketField("ROIVapdu", ROIVapdu(command_type=CMD_CONFIRMED_EVENT_REPORT), ROIVapdu),
         PacketField("EventReportArgument", EventReportArgument(), EventReportArgument),
         PacketField("MDSCreateInfo", MDSCreateInfo(), MDSCreateInfo),
+    ]
+
+class MDSCreateEventResult(NonContainerPacket):  # PIPG-55
+    name = "MDSCreateEventResult"
+    fields_desc = [
+        PacketField("SPpdu", SPpdu(), SPpdu),
+        PacketField("ROapdus", ROapdus(ro_type=RORS_APDU), ROapdus),
+        PacketField("RORSapdu", RORSapdu(), RORSapdu),
+        PacketField("EventReportResult", EventReportResult(), EventReportResult),
     ]
 
 
