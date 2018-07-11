@@ -200,11 +200,11 @@ class ConnectIndication(NonContainerPacket):
     ]
 
 
-class SPpdu(NonContainerPacket):
+class SPpdu(NonContainerPacket):  # PIPG-42
     name = "SPpdu"
     fields_desc = [
         ShortField("session_id", 0xE100), # "This field identifies a Protocol message. The field contains a fixed value 0xE100"
-        ShortField("context_id", 0),
+        ShortField("context_id", 2), # If a Computer Client encodes the Association Control protocol commands as suggested in "Definition of the Association Control Protocol" on page 65, the context_id for the Data Export protocol commands is 2.
     ]
 
 
