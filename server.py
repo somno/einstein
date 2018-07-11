@@ -30,6 +30,7 @@ class EinsteinServer(DatagramProtocol):
 
 
     def handleConnectionIndication(self, data, (host, port)):
+        print("Received ConnectionIndication message, associating")
         ci = packets.ConnectIndication()
         ci.dissect(data)
 
@@ -38,15 +39,35 @@ class EinsteinServer(DatagramProtocol):
 
 
     def handleAssociationMessage(self, data, (host, port)):
-        print("Association message: %s" % ''.join(x.encode('hex') for x in data))
+        print("Received Association message: %s" % ''.join(x.encode('hex') for x in data))
         # TODO Properly validate response, rejection, etc.
 
 
     def handleProtocolMessage(self, data, (host, port)):
-        # TODO Don't assume message type
-        mdscer = packets.MDSCreateEventReport()
-        mdscer.dissect(data)
-        mdscer.show()
+        print("Received Protocol message, handling")
+        sppdu = packets.SPpdu()
+        sppdu.dissect(data)
+        remainder = sppdu.load
+
+        roapdus = packets.ROapdus()
+        roapdus.dissect(remainder)
+        remainder = roapdus.load
+
+        if roapdus.ro_type == packets.ROIV_APDU:
+            roivapdu = packets.ROIVapdu()
+            roivapdu.dissect(remainder)
+            remainder = roivapdu.load
+
+            if roivapdu.command_type == packets.CMD_CONFIRMED_EVENT_REPORT:
+                mdscer = packets.MDSCreateEventReport()
+                mdscer.dissect(data)
+                mdscer.show()
+            else:
+                print("Unknown command_type in roivapdu!")
+                roivapdu.show()
+        else:
+            print("Unknown ro_type in roapdus!")
+            roapdus.show()
 
 
 reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, EinsteinServer())
