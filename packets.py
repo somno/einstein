@@ -26,11 +26,25 @@ class Nomenclature(NonContainerPacket):
     ]
 
 
+ROIV_APDU = 1
+RORS_APDU = 2
+ROER_APDU = 3
+ROLRS_APDU = 5
+
+def ROTypeField(name, default):
+    enum = {
+        ROIV_APDU: "ROIV_APDU",
+        RORS_APDU: "RORS_APDU",
+        ROER_APDU: "ROER_APDU",
+        ROLRS_APDU: "ROLRS_APDU",
+    }
+    return ShortEnumField(name, default, enum)
+
 
 class ROapdus(NonContainerPacket):
     name = "ROapdus"
     fields_desc = [
-        ShortField("ro_type", 0), # TODO Enum?
+        ROTypeField("ro_type", 0),
         ShortField("length", 0),
     ]
 
