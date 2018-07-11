@@ -72,6 +72,27 @@ class EinsteinServer(DatagramProtocol):
 
                 self.transport.write(str(mdsceResult), (host, port))
 
+                # And now follow up with a basic poll
+
+                pollAction = packets.SPpdu()  # PIPG-55
+                pollAction /= packets.ROapdus(ro_type=packets.ROIV_APDU)
+                pollAction /= packets.ROIVapdu(command_type=packets.CMD_CONFIRMED_ACTION)
+                pollAction /= packets.ActionArgument(
+                    managed_object=packets.ManagedObjectId(m_obj_class=packets.NOM_MOC_VMS_MDS),
+                    action_type=packets.NOM_ACT_POLL_MDIB_DATA,
+                )
+                pollAction /= packets.PollMdibDataReq(
+                    polled_obj_type=packets.TYPE(
+                        partition=packets.NOM_PART_OBJ,
+                        code=packets.NOM_MOC_VMO_METRIC_NU,
+                    ),
+                    polled_attr_grp=0,  # TODO Set this to something specific, chosen, and useful...
+                )
+
+                pollAction.show2()
+
+                self.transport.write(str(pollAction), (host, port))
+
             else:
                 print("Unknown command_type in roivapdu!")
                 roivapdu.show()
