@@ -45,45 +45,40 @@ class EinsteinServer(DatagramProtocol):
 
     def handleProtocolMessage(self, data, (host, port)):
         print("Received Protocol message, handling")
-        sppdu = packets.SPpdu()
-        sppdu.dissect(data)
-        remainder = sppdu.load
+        message = packets.SPpdu()
+        message.dissect(data)
 
-        roapdus = packets.ROapdus()
-        roapdus.dissect(remainder)
-        remainder = roapdus.load
-
-        if roapdus.ro_type == packets.ROIV_APDU:
-            roivapdu = packets.ROIVapdu()
-            roivapdu.dissect(remainder)
-            remainder = roivapdu.load
+        if packets.ROIVapdu in message:
+            roivapdu = message[packets.ROIVapdu]
 
             if roivapdu.command_type == packets.CMD_CONFIRMED_EVENT_REPORT:
                 print("Received MDSCreateEventReport, sending MDSCreateEventResult")
-                mdsceReport = packets.MDSCreateEventReport()
-                mdsceReport.dissect(data)
 
                 # Ok! Now to reply!
 
-                mdsceResult = packets.MDSCreateEventResult()
-                mdsceResult.RORSapdu.invoke_id = mdsceReport.ROIVapdu.invoke_id
-                mdsceResult.EventReportResult.managed_object = mdsceReport.EventReportArgument.managed_object
+                mdsceResult = packets.SPpdu()
+                mdsceResult = mdsceResult / packets.ROapdus(ro_type=packets.ROIV_APDU)
+                mdsceResult = mdsceResult / packets.RORSapdu(
+                    command_type=packets.CMD_CONFIRMED_EVENT_REPORT,
+                    invoke_id=message[packets.ROIVapdu].invoke_id,
+                )
+                mdsceResult = mdsceResult / packets.EventReportResult(
+                    managed_object=message[packets.EventReportArgument].managed_object,
+                    event_type=packets.NOM_NOTI_MDS_CREAT,
+                )
 
                 mdsceResult.show2()
 
-                self.transport.write(str(mdsceReport), (host, port))
+                self.transport.write(str(mdsceResult), (host, port))
 
             else:
                 print("Unknown command_type in roivapdu!")
                 roivapdu.show()
-        elif roapdus.ro_type == packets.ROER_APDU:
-            roerapdu = packets.ROERapdu()
-            roerapdu.dissect(remainder)
-
-            roerapdu.show()
+        elif packets.ROERapdu in message:
+            message[packets.ROERapdu].show()
         else:
-            print("Unknown ro_type in roapdus!")
-            roapdus.show()
+            print("Unknown message!")
+            message.show()
 
 
 reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, EinsteinServer())

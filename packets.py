@@ -17,7 +17,7 @@ class NonContainerPacket(Packet):
         return "", p
 
 
-class Nomenclature(NonContainerPacket):
+class Nomenclature(Packet):
     name = "Nomenclature"
     fields_desc = [
         ShortField("Magic", 0),
@@ -41,15 +41,13 @@ def ROTypeField(name, default):
     return ShortEnumField(name, default, enum)
 
 
-class ROapdus(NonContainerPacket):
+class ROapdus(Packet):
     name = "ROapdus"
     fields_desc = [
         ROTypeField("ro_type", 0),
-        ShortField("length", 0),
+        LenField("length", None),
     ]
 
-    def extract_padding(self, p):
-        return "", p
 
 CMD_EVENT_REPORT = 0
 CMD_CONFIRMED_EVENT_REPORT = 1
@@ -70,24 +68,21 @@ def CMDTypeField(name, default):  # PIPG-47
     return ShortEnumField(name, default, enum)
 
 
-class ROIVapdu(NonContainerPacket):
+class ROIVapdu(Packet):
     name = "ROIVapdu"
     fields_desc = [
         ShortField("invoke_id", 0),
         CMDTypeField("command_type", 0),
-        ShortField("length", 0),
+        LenField("length", None),
     ]
 
-    def extract_padding(self, p):
-        return "", p
 
-
-class RORSapdu(NonContainerPacket):  # PIPG-43
+class RORSapdu(Packet):  # PIPG-43
     name = "RORSapdu"
     fields_desc = [
         ShortField("invoke_id", 0),
         CMDTypeField("command_type", 0),
-        ShortField("length", 0),
+        LenField("length", None),
     ]
 
 
@@ -123,7 +118,7 @@ class ROERapdu(NonContainerPacket):  # PIPG-45
     fields_desc = [
         ShortField("invoke_id", 0),
         ErrorValueField("error_value", 0),
-        ShortField("length", 0),
+        LenField("length", None),
     ]
 
 
@@ -151,13 +146,13 @@ class ManagedObjectId(NonContainerPacket):
 
 RelativeTimeField = IntField
 
-class EventReportArgument(NonContainerPacket):
+class EventReportArgument(Packet):
     name = "EventReportArgument"
     fields_desc = [
         PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
         RelativeTimeField("event_time", 0),
         OIDTypeField("event_type", 0),
-        ShortField("length", 0),
+        LenField("length", None),
     ]
 
 
@@ -167,7 +162,7 @@ class EventReportResult(NonContainerPacket):
         PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
         RelativeTimeField("current_time", 0),
         OIDTypeField("event_type", 0),
-        ShortField("length", 0),
+        LenField("length", None),
     ]
 
 
@@ -189,18 +184,11 @@ class AttributeList(Packet):
     ]
 
 
-class ConnectIndication(NonContainerPacket):
-    name = "ConnectIndication"
-    fields_desc = [
-        PacketField("Nomenclature", "", Nomenclature),
-        PacketField("ROapdus", "", ROapdus),
-        PacketField("ROIVapdu", "", ROIVapdu),
-        PacketField("EventReportArgument", "", EventReportArgument),
-        PacketField("ConnectIndInfo", "", AttributeList),
-    ]
+def ConnectIndication():
+    return Nomenclature() / ROapdus() / ROIVapdu() / EventReportArgument() / AttributeList()
 
 
-class SPpdu(NonContainerPacket):  # PIPG-42
+class SPpdu(Packet):  # PIPG-42
     name = "SPpdu"
     fields_desc = [
         ShortField("session_id", 0xE100), # "This field identifies a Protocol message. The field contains a fixed value 0xE100"
@@ -216,15 +204,8 @@ class MDSCreateInfo(NonContainerPacket):
     ]
 
 
-class MDSCreateEventReport(NonContainerPacket):
-    name = "MDSCreateEventReport"
-    fields_desc = [
-        PacketField("SPpdu", SPpdu(), SPpdu),
-        PacketField("ROapdus", ROapdus(), ROapdus),
-        PacketField("ROIVapdu", ROIVapdu(), ROIVapdu),
-        PacketField("EventReportArgument", EventReportArgument(), EventReportArgument),
-        PacketField("MDSCreateInfo", MDSCreateInfo(), MDSCreateInfo),
-    ]
+def MDSCreateEventReport():
+    return SPpdu() / ROapdus() / ROIVapdu() / EventReportArgument() / MDSCreateInfo()
 
 
 """
@@ -237,7 +218,7 @@ Examples:
 L = 15 is encoded as 0x0f
 L = 256 is encoded as {0xff,0x01,0x00}
 """
-LIField = ShortField  # TODO
+LIField = LenField  # TODO
 
 
 class SessionHeader(NonContainerPacket):
@@ -306,7 +287,7 @@ class MDSCreateEventReport(NonContainerPacket):  # PIPG-54
         PacketField("MDSCreateInfo", MDSCreateInfo(), MDSCreateInfo),
     ]
 
-class MDSCreateEventResult(NonContainerPacket):  # PIPG-55
+def MDSCreateEventResult():  # PIPG-55
     name = "MDSCreateEventResult"
     fields_desc = [
         PacketField("SPpdu", SPpdu(), SPpdu),
@@ -316,11 +297,27 @@ class MDSCreateEventResult(NonContainerPacket):  # PIPG-55
     ]
 
 
+bind_layers(Nomenclature, ROapdus)
+bind_layers(SPpdu, ROapdus)
+bind_layers(ROapdus, RORSapdu, ro_type=RORS_APDU)
+bind_layers(ROapdus, ROIVapdu, ro_type=ROIV_APDU)
+bind_layers(ROapdus, ROERapdu, ro_type=ROER_APDU)
+bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_EVENT_REPORT)
+bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_CONFIRMED_EVENT_REPORT)
+NOM_NOTI_MDS_CREAT = 3334  # TODO RELOCATE
+bind_layers(EventReportArgument, MDSCreateInfo, event_type=NOM_NOTI_MDS_CREAT)
+# TODO bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
+
+
 if __name__ == '__main__':
     cieDump = '\x00\x00\x01\x00\x00\x01\x01\xc2\x00\x00\x00\x00\x01\xbc\x00#\x00\x00\x00\x00\x00\xd6\xd4\x00\r\x17\x01\xae\x00\x0b\x01\xaa\t \x00\x04\x00\x03\x00\x00\t\x86\x00\x04\x00\x01\x11M\t7\x00\x08\x06\x08\x06\x08\x00\x01\x00\x0b\xf1Z\x00\x04\x00\x00\x00\x02\xf16\x00\x04\x00\x00\x00\x00\xf2|\x00\x1a\x00\x01\x80\x00\x00\x01\x00\x12\xf1\x00\x00\x0e\x00\t\xfb\tw\xbd\n\r%\x02\xff\xff\xff\x00\xf15\x00"\x00E\x00C\x00C\x00 \x00M\x00O\x00N\x00 \x00R\x00M\x001\x005\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf1\x00\x00\x0e\x00\t\xfb\tw\xbd\n\r%\x02\xff\xff\xff\x00\xf1\x01\x00,\x00\x05\x00(\x00\x01\x00\x03]\xc0\x00\x00\x00\x02\x00\x03]\xc0\x00\x00\x00\x01\x00\x01^)\x00\x00\x00\x05\x00\x01^)\x00\x00\x00\x08\x00\x01\x825\x00\x00\t-\x00\xdc\x00\x06\x00d\x00\x01\x00\x08\x00\x0cDE22713007\x00\t\x00\x02\x00\x08\x00\x0eM8007A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x08\x00\x08 B.00.05\x00\x05\x00x\x00\x08--------\x00\x02\x00X\x00\x0eS-M4046-1701A \x00\x04\x00X\x00\x08G.01.78 \x00\x07\x00\x86\x00\x01\x00\x08\x00\x0cDE22713007\x00\t\x00\x02\x00\x08\x00\x0eM8007A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x08\x00\x08 B.00.05\x00\x05\x00x\x00\x08--------\x00\x02\x00X\x00\x0eS-M4046-1701A \x00\x04\x00X\x00\x08G.01.78 \x00\x02\x00X\x00\x0eS-M404\t(\x00\x14\x00\x08Philips\x00\x00\x07M8007A\x00\x00'
 
     print cieDump
 
-    cie = ConnectIndication()
-    cie.dissect(cieDump)
-    cie.show()
+    n = Nomenclature()
+    n.dissect(cieDump)
+    n.show()
+
+    cii = AttributeList()  # TODO BIND
+    cii.dissect(n.load)
+    cii.show()
