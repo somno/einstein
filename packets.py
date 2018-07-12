@@ -266,7 +266,7 @@ def MeasurementStateField(name, default):  # PIPG-76
     return FlagsField(name, default, 16, flags)
 
 
-FLOATTypeField = IntField  # TODO
+FLOATTypeField = XIntField  # TODO
 
 
 class NuObsValue(NonContainerPacket):
