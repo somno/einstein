@@ -163,7 +163,21 @@ class ManagedObjectId(NonContainerPacket):
 
 
 RelativeTimeField = IntField
-AbsoluteTimeField = IntField
+
+
+class AbsoluteTime(NonContainerPacket):
+    name = "AbsoluteTime"
+    fields_desc = [
+        ByteField("century", 0),
+        ByteField("year", 0),
+        ByteField("month", 0),
+        ByteField("day", 0),
+        ByteField("hour", 0),
+        ByteField("minute", 0),
+        ByteField("second", 0),
+        ByteField("sec_fractions", 0),
+    ]
+
 
 class EventReportArgument(Packet):
     name = "EventReportArgument"
@@ -393,7 +407,7 @@ class PollMdibDataReply(Packet):
     fields_desc = [
         ShortField("poll_number", 0),
         RelativeTimeField("rel_time_stamp", 0),
-        AbsoluteTimeField("abs_time_stamp", 0),
+        PacketField("abs_time_stamp", AbsoluteTime(), AbsoluteTime),
         PacketField("polled_obj_type", TYPE(), TYPE),
         OIDTypeField("polled_attr_grp", 0),
         PacketField("poll_info_list", PollInfoList(), PollInfoList),
