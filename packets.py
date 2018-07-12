@@ -213,12 +213,25 @@ class EventReportResult(NonContainerPacket):
     ]
 
 
-class AVAType(NonContainerPacket):
+MeasurementStateField = ShortField  # TODO
+FLOATTypeField = IntField  # TODO
+
+
+class NuObsValue(NonContainerPacket):
+    name = "NuObsValue"
+    fields_desc = [
+        OIDTypeField("physio_id", 0),
+        MeasurementStateField("state", 0),
+        OIDTypeField("unit_code", 0),
+        FLOATTypeField("value", 0),
+    ]
+
+
+class AVAType(Packet):
     name = "AVAType"
     fields_desc = [
         OIDTypeField("attribute_id", 0),
-        FieldLenField("length", 0, length_of="attribute_val"),
-        StrLenField("attribute_val", "", length_from=lambda p: p.length),
+        LenField("length", None),
     ]
 
 
@@ -462,6 +475,7 @@ bind_layers(EventReportArgument, MDSCreateInfo, event_type=NOM_NOTI_MDS_CREAT)
 bind_layers(ActionArgument, PollMdibDataReq, action_type=NOM_ACT_POLL_MDIB_DATA)
 bind_layers(ActionResult, PollMdibDataReply, action_type=NOM_ACT_POLL_MDIB_DATA)
 bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
+bind_layers(AVAType, NuObsValue, attribute_id=NOM_ATTR_NU_VAL_OBS)
 
 
 if __name__ == '__main__':
