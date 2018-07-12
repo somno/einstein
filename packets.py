@@ -534,6 +534,7 @@ bind_layers(ActionArgument, PollMdibDataReq, action_type=NOM_ACT_POLL_MDIB_DATA)
 bind_layers(ActionResult, PollMdibDataReply, action_type=NOM_ACT_POLL_MDIB_DATA)
 bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
 bind_layers(AVAType, NuObsValue, attribute_id=NOM_ATTR_NU_VAL_OBS)
+bind_layers(AVAType, AbsoluteTime, attribute_id=NOM_ATTR_TIME_STAMP_ABS)
 
 
 if __name__ == '__main__':
