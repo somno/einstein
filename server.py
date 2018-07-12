@@ -99,16 +99,31 @@ class EinsteinServer(DatagramProtocol):
         elif packets.ROLRSapdu in message:
             # TODO Implement support for rolling up Remote Operation Linked Results
             print("ROLRSapdu!")
-            message.show()
+            # message.show()
+            self.displayResult(message)
         elif packets.ROERapdu in message:
             # Error
             message[packets.ROERapdu].show()
         elif packets.RORSapdu in message:
             print("Results!")
-            message.show()
+            # message.show()
+            self.displayResult(message)
         else:
             print("Unknown message!")
             message.show()
+
+    def displayResult(self, message):
+        """
+        This is quick and nasty and ignores all kinds of context, just focussing on ObservationPolls with data
+        """
+
+        poll_info_list = message[packets.PollInfoList]
+
+        for single_context_poll in poll_info_list.value:
+            for observation_poll in single_context_poll.value:
+                for attribute_list in observation_poll.attributes:
+                    for attribute in attribute_list.value:
+                        attribute.show()
 
 
 reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, EinsteinServer())
