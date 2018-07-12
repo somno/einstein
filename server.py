@@ -84,9 +84,9 @@ class EinsteinServer(DatagramProtocol):
                 pollAction /= packets.PollMdibDataReq(
                     polled_obj_type=packets.TYPE(
                         partition=packets.NOM_PART_OBJ,
-                        code=packets.NOM_MOC_VMO_METRIC_NU,
+                        code=packets.NOM_MOC_VMO_METRIC_NU,  # Numerics, i.e. numbers about attached patient
                     ),
-                    polled_attr_grp=0,  # TODO Set this to something specific, chosen, and useful...
+                    polled_attr_grp=packets.NOM_ATTR_GRP_METRIC_VAL_OBS,  # Observed values of the "object" (patient)
                 )
 
                 # pollAction.show2()
