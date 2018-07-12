@@ -141,17 +141,21 @@ class ROERapdu(NonContainerPacket):  # PIPG-45
 
 
 NOM_ATTR_GRP_METRIC_VAL_OBS = 2051
+NOM_ATTR_NU_VAL_OBS = 2384
 NOM_ACT_POLL_MDIB_DATA = 3094
 NOM_NOTI_MDS_CREAT = 3334
 NOM_NOTI_CONN_INDIC = 3351
 NOM_NOTI_MDS_CONNECT_INDIC = NOM_NOTI_CONN_INDIC  # These appear to be the same based on experimental data / PIPG-53
+NOM_DEV_PULS_VMD = 5138
 
 def OIDTypeField(name, default):
     enum = {
         NOM_ATTR_GRP_METRIC_VAL_OBS: "NOM_ATTR_GRP_METRIC_VAL_OBS",
+        NOM_ATTR_NU_VAL_OBS: "NOM_ATTR_NU_VAL_OBS",
         NOM_ACT_POLL_MDIB_DATA: "NOM_ACT_POLL_MDIB_DATA",
         NOM_NOTI_MDS_CREAT: "NOM_NOTI_MDS_CREAT",
         NOM_NOTI_CONN_INDIC: "NOM_NOTI_CONN_INDIC",
+        NOM_DEV_PULS_VMD: "NOM_DEV_PULS_VMD",
     }
     return ShortEnumField(name, default, enum)
 
