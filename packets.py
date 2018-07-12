@@ -454,10 +454,11 @@ bind_layers(ROIVapdu, EventReportArgument, command_type=CMD_CONFIRMED_EVENT_REPO
 bind_layers(ROIVapdu, ActionArgument, command_type=CMD_CONFIRMED_ACTION)
 bind_layers(RORSapdu, EventReportResult, command_type=CMD_CONFIRMED_EVENT_REPORT)
 bind_layers(RORSapdu, ActionResult, command_type=CMD_CONFIRMED_ACTION)
+bind_layers(ROLRSapdu, ActionResult, command_type=CMD_CONFIRMED_ACTION)
 bind_layers(EventReportArgument, MDSCreateInfo, event_type=NOM_NOTI_MDS_CREAT)
 bind_layers(ActionArgument, PollMdibDataReq, action_type=NOM_ACT_POLL_MDIB_DATA)
 bind_layers(ActionResult, PollMdibDataReply, action_type=NOM_ACT_POLL_MDIB_DATA)
-# TODO bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
+bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
 
 
 if __name__ == '__main__':
