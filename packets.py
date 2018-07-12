@@ -140,7 +140,17 @@ class ROERapdu(NonContainerPacket):  # PIPG-45
     ]
 
 
-OIDTypeField = ShortField
+NOM_NOTI_MDS_CREAT = 3334
+NOM_NOTI_CONN_INDIC = 3351
+NOM_NOTI_MDS_CONNECT_INDIC = NOM_NOTI_CONN_INDIC  # These appear to be the same based on experimental data / PIPG-53
+
+def OIDTypeField(name, default):
+    enum = {
+        NOM_NOTI_MDS_CREAT: "NOM_NOTI_MDS_CREAT",
+        NOM_NOTI_CONN_INDIC: "NOM_NOTI_CONN_INDIC",
+    }
+    return ShortEnumField(name, default, enum)
+
 
 MdsContextField = ShortField
 
@@ -432,7 +442,6 @@ class PollMdibDataReply(Packet):
 NOM_MOC_VMO_METRIC_NU = 6
 NOM_MOC_VMS_MDS = 33
 NOM_ACT_POLL_MDIB_DATA = 3094
-NOM_NOTI_MDS_CREAT = 3334
 
 bind_layers(Nomenclature, ROapdus)
 bind_layers(SPpdu, ROapdus)
