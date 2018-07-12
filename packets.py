@@ -147,6 +147,9 @@ NOM_NOTI_MDS_CREAT = 3334
 NOM_NOTI_CONN_INDIC = 3351
 NOM_NOTI_MDS_CONNECT_INDIC = NOM_NOTI_CONN_INDIC  # These appear to be the same based on experimental data / PIPG-53
 NOM_DEV_PULS_VMD = 5138
+NOM_PLETH_PULS_RATE = 18466
+NOM_PULS_OXIM_PERF_REL = 19376
+NOM_SAT_O2_TONE_FREQ = 61448
 
 def OIDTypeField(name, default):
     enum = {
@@ -156,6 +159,9 @@ def OIDTypeField(name, default):
         NOM_NOTI_MDS_CREAT: "NOM_NOTI_MDS_CREAT",
         NOM_NOTI_CONN_INDIC: "NOM_NOTI_CONN_INDIC",
         NOM_DEV_PULS_VMD: "NOM_DEV_PULS_VMD",
+        NOM_PLETH_PULS_RATE: "NOM_PLETH_PULS_RATE",
+        NOM_PULS_OXIM_PERF_REL: "NOM_PULS_OXIM_PERF_REL",
+        NOM_SAT_O2_TONE_FREQ: "NOM_SAT_O2_TONE_FREQ",
     }
     return ShortEnumField(name, default, enum)
 
