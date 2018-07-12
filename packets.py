@@ -208,7 +208,7 @@ class AVAType(NonContainerPacket):
     ]
 
 
-class AttributeList(Packet):
+class AttributeList(NonContainerPacket):
     name = "AttributeList"
     fields_desc = [
         FieldLenField("count", 0, count_of="value"),
