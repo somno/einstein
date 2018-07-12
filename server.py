@@ -89,7 +89,7 @@ class EinsteinServer(DatagramProtocol):
                     polled_attr_grp=0,  # TODO Set this to something specific, chosen, and useful...
                 )
 
-                pollAction.show2()
+                # pollAction.show2()
 
                 self.transport.write(str(pollAction), (host, port))
 
