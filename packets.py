@@ -386,10 +386,24 @@ class ActionResult(Packet):
     ]
 
 
-class SingleContextPoll(Packet):
+class ObservationPoll(NonContainerPacket):  # PIPG-58
+    name = "ObservationPoll"
+    fields_desc = [
+        HandleField("obj_handle", 0),
+        PacketField("attributes", AttributeList(), AttributeList),
+    ]
+
+
+class SingleContextPoll(NonContainerPacket):  # PIPG-58
+    """
+    This inlines the poll_info structure, but it doesn't seem to be used elsewhere
+    """
     name = "SingleContextPoll"
     fields_desc = [
-        # FIXME
+        MdsContextField("context_id", 0),
+        FieldLenField("count", 0, count_of="value"),
+        FieldLenField("length", 0, length_of="value"),
+        PacketListField("value", [], ObservationPoll, length_from=lambda p: p.length),
     ]
 
 
