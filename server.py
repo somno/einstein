@@ -71,25 +71,7 @@ class EinsteinServer(DatagramProtocol):
 
                 # And now follow up with a basic poll
 
-                pollAction = packets.SPpdu()  # PIPG-55
-                pollAction /= packets.ROapdus(ro_type=packets.ROIV_APDU)
-                pollAction /= packets.ROIVapdu(command_type=packets.CMD_CONFIRMED_ACTION)
-                pollAction /= packets.ActionArgument(
-                    managed_object=packets.ManagedObjectId(m_obj_class=packets.NOM_MOC_VMS_MDS),
-                    action_type=packets.NOM_ACT_POLL_MDIB_DATA,
-                )
-                pollAction /= packets.PollMdibDataReq(
-                    polled_obj_type=packets.TYPE(
-                        partition=packets.NOM_PART_OBJ,
-                        code=packets.NOM_MOC_VMO_METRIC_NU,  # Numerics, i.e. numbers about attached patient
-                    ),
-                    polled_attr_grp=packets.NOM_ATTR_GRP_METRIC_VAL_OBS,  # Observed values of the "object" (patient)
-                )
-
-                # pollAction.show2()
-
-                self.transport.write(str(pollAction), (host, port))
-
+                self.pollForData((host, port))
             else:
                 print("Unknown command_type in roivapdu!")
                 roivapdu.show()
@@ -108,6 +90,28 @@ class EinsteinServer(DatagramProtocol):
         else:
             print("Unknown message!")
             message.show()
+
+
+    def pollForData(self, (host, port)):
+        pollAction = packets.SPpdu()  # PIPG-55
+        pollAction /= packets.ROapdus(ro_type=packets.ROIV_APDU)
+        pollAction /= packets.ROIVapdu(command_type=packets.CMD_CONFIRMED_ACTION)
+        pollAction /= packets.ActionArgument(
+            managed_object=packets.ManagedObjectId(m_obj_class=packets.NOM_MOC_VMS_MDS),
+            action_type=packets.NOM_ACT_POLL_MDIB_DATA,
+        )
+        pollAction /= packets.PollMdibDataReq(
+            polled_obj_type=packets.TYPE(
+                partition=packets.NOM_PART_OBJ,
+                code=packets.NOM_MOC_VMO_METRIC_NU,  # Numerics, i.e. numbers about attached patient
+            ),
+            polled_attr_grp=packets.NOM_ATTR_GRP_METRIC_VAL_OBS,  # Observed values of the "object" (patient)
+        )
+
+        # pollAction.show2()
+
+        self.transport.write(str(pollAction), (host, port))
+
 
     def displayResult(self, message):
         """
