@@ -1,5 +1,6 @@
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
+from twisted.internet.task import LoopingCall
 import socket
 import packets
 import vscapture
@@ -31,8 +32,8 @@ class EinsteinServer(DatagramProtocol):
         ci = packets.ConnectIndication()
         ci.dissect(data)
 
-        # TODO Store for later usage, don't just blindly
-        self.transport.write(ASSOCIATION_REQUEST_MESSAGE, (host, packets.PORT_PROTOCOL))
+        if self.loop is None:  # TODO Better state representation!
+            self.transport.write(ASSOCIATION_REQUEST_MESSAGE, (host, packets.PORT_PROTOCOL))
 
 
     def handleAssociationMessage(self, data, (host, port)):
@@ -71,7 +72,8 @@ class EinsteinServer(DatagramProtocol):
 
                 # And now follow up with a basic poll
 
-                self.pollForData((host, port))
+                self.loop = LoopingCall(self.pollForData, ((host, port)))
+                self.loop.start(1)
             else:
                 print("Unknown command_type in roivapdu!")
                 roivapdu.show()
@@ -128,6 +130,14 @@ class EinsteinServer(DatagramProtocol):
                             obsValue = attribute[packets.NuObsValue]
                             if obsValue.measurementIsValid():
                                 obsValue.show()
+
+    def startProtocol(self):
+        self.loop = None
+
+
+    def stopProtocol(self):
+        if self.loop is not None:
+            self.loop.stop()
 
 
 reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, EinsteinServer())
