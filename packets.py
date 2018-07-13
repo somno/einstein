@@ -284,6 +284,12 @@ class NuObsValue(NonContainerPacket):
         FLOATTypeField("value", 0),
     ]
 
+    def measurementIsValid(self):  # PIPG-77
+        """
+        "The measurement is valid if the first octet of the state is all 0."
+        """
+        return self.state < 0xFFF
+
 
 class AVAType(Packet):
     name = "AVAType"
