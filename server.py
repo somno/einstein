@@ -124,7 +124,10 @@ class EinsteinServer(DatagramProtocol):
             for observation_poll in single_context_poll.value:
                 for attribute_list in observation_poll.attributes:
                     for attribute in attribute_list.value:
-                        attribute.show()
+                        if attribute.attribute_id == packets.NOM_ATTR_NU_VAL_OBS:
+                            obsValue = attribute[packets.NuObsValue]
+                            if obsValue.measurementIsValid():
+                                obsValue.show()
 
 
 reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, EinsteinServer())
