@@ -513,6 +513,9 @@ class PollMdibDataReply(Packet):
     ]
 
 
+ReleaseRequest = "\x09\x18\xC1\x16\x61\x80\x30\x80\x02\x01\x01\xA0\x80\x62\x80\x80\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"  # PIPG-301
+
+
 # TODO Relocate / flesh these out
 NOM_MOC_VMO_METRIC_NU = 6
 NOM_MOC_VMS_MDS = 33
