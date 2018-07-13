@@ -15,12 +15,6 @@ class EinsteinServer(DatagramProtocol):
     """
 
     def datagramReceived(self, data, (host, port)):
-        """
-        Note this assumes `data` contains a complete packet - I have no
-        evidence nor reason to assume that is an invalid assumption, but it
-        is not clear that it isn't just coincidence either.
-        """
-
         print("Datagram received!")
 
         if port == packets.PORT_CONNECTION_INDICATION:
