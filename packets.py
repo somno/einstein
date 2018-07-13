@@ -339,10 +339,30 @@ L = 256 is encoded as {0xff,0x01,0x00}
 LIField = LenField  # TODO
 
 
-class SessionHeader(NonContainerPacket):
+CN_SPDU_SI = 0x0D  # PIPG-67 "CN_SPDU_SI: A Session Connect header. The message contains an Association Request"
+AC_SPDU_SI = 0x0E  # PIPG-67 "AC_SPDU_SI: A Session Accept header. The message contains an Association Response, indicating that the association has been established."
+RF_SPDU_SI = 0x0C  # PIPG-67 "RF_SPDU_SI: A Session Refuse header. An association could not be established."
+FN_SPDU_SI = 0x09  # PIPG-67 "FN_SPDU_SI: A Session Finish header. The message contains a Release Request, indicating that the association should be terminated."
+DN_SPDU_SI = 0x0A  # PIPG-67 "DN_SPDU_SI: A Session Disconnect header. The message contains a Release Response, indicating that the association has been terminated."
+AB_SPDU_SI = 0x19  # PIPG-67 "AB_SPDU_SI: A Session Abort header. The message contains an Abort message, indicating the immediate termination of the association."
+
+
+def SessionHeaderTypeField(name, default):  # PIPG-67
+    enum = {
+        CN_SPDU_SI: "CN_SPDU_SI",
+        AC_SPDU_SI: "AC_SPDU_SI",
+        RF_SPDU_SI: "RF_SPDU_SI",
+        FN_SPDU_SI: "FN_SPDU_SI",
+        DN_SPDU_SI: "DN_SPDU_SI",
+        AB_SPDU_SI: "AB_SPDU_SI",
+    }
+    return ByteEnumField(name, default, enum)
+
+
+class SessionHeader(Packet):
     name = "SessionHeader"
     fields_desc = [
-        ByteEnumField("type", 0, {}), #TODO
+        SessionHeaderTypeField("type", 0),
         LIField("length", 0),
     ]
 

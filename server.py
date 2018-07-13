@@ -42,7 +42,10 @@ class EinsteinServer(DatagramProtocol):
 
 
     def handleAssociationMessage(self, data, (host, port)):
-        print("Received Association message: %s" % ''.join(x.encode('hex') for x in data))
+        print("Received Association message")
+        associationMessage = packets.SessionHeader()
+        associationMessage.dissect(data)
+        associationMessage.show()
         # TODO Properly validate response, rejection, etc.
 
 
