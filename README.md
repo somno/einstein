@@ -2,6 +2,19 @@
 
 Einstein provides a communication interface for Philips IntelliVue Patient Monitors.
 
+
+## What is it?
+
+Philips IntelliVue Patient Monitors ("IntelliVues") natively export data through means of a proprietary API over UDP.
+
+Einstein is a service that connects to IntelliVues and provides an HTTP/JSON API,
+to make it easier for applications on top to work with the data.
+
+Einstein essentially consists of two parts;
+packet definitions and interfacing tools for the IntelliVue protocol (largely built with [Scapy](https://scapy.net/)),
+and the engine for handling high-level communications and state with IntelliVue devices and HTTP clients (largely built with [Twisted](https://twistedmatrix.com/)).
+
+
 ## References
 
 Much of this work was built based on the Philips IntelliVue Patient Monitor DATA EXPORT INTERFACE
