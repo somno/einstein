@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f3a182917ddb26d872489de37f11b78036b60e8f0c9a4581fd8eba50fdf071ce"
+            "sha256": "7af8eb25221abe7498696fe9e054b54d913ea44bf8ca82f7b238b4ecd9556c19"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -58,6 +58,21 @@
             ],
             "version": "==17.5.0"
         },
+        "pyfiglet": {
+            "hashes": [
+                "sha256:446194e1fc3257ffc8024eafd3b486394847597f6210278d76bd582850205e12"
+            ],
+            "index": "pypi",
+            "version": "==0.7.5"
+        },
+        "pyhamcrest": {
+            "hashes": [
+                "sha256:6b672c02fdf7470df9674ab82263841ce8333fb143f32f021f6cb26f0e512420",
+                "sha256:8ffaa0a53da57e89de14ced7185ac746227a8894dbd5a3c718bf05ddbd1d56cd"
+            ],
+            "markers": "python_version >= '2.7' and python_version != '3.0.*' and python_version != '3.1.*' and python_version != '3.2.*' and python_version != '3.3.*'",
+            "version": "==1.9.0"
+        },
         "scapy": {
             "hashes": [
                 "sha256:452f714f5c2eac6fd0a6146b1dbddfc24dd5f4103f3ed76227995a488cfb2b73"
@@ -74,11 +89,11 @@
         },
         "twisted": {
             "hashes": [
-                "sha256:3ad1e553c7b66a501abbcf7736620210cc58928730d3e1b905b345fc30043d4b",
-                "sha256:a4cc164a781859c74de47f17f0e85f4bce8a3321a9d0892c015c8f80c4158ad9"
+                "sha256:5de7b79b26aee64efe63319bb8f037af88c21287d1502b39706c818065b3d5a4",
+                "sha256:95ae985716e8107816d8d0df249d558dbaabb677987cc2ace45272c166b267e4"
             ],
             "index": "pypi",
-            "version": "==18.4.0"
+            "version": "==18.7.0"
         },
         "zope.interface": {
             "hashes": [

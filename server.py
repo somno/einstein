@@ -16,7 +16,7 @@ class EinsteinServer(DatagramProtocol):
     """
 
     def datagramReceived(self, data, (host, port)):
-        print("Datagram received!")
+        # print("Datagram received!")
 
         if port == packets.PORT_CONNECTION_INDICATION:
             self.handleConnectionIndication(data, (host, port))
@@ -28,7 +28,7 @@ class EinsteinServer(DatagramProtocol):
 
 
     def handleConnectionIndication(self, data, (host, port)):
-        print("Received ConnectionIndication message, associating")
+        # print("Received ConnectionIndication message, associating")
         ci = packets.ConnectIndication()
         ci.dissect(data)
 
@@ -37,15 +37,15 @@ class EinsteinServer(DatagramProtocol):
 
 
     def handleAssociationMessage(self, data, (host, port)):
-        print("Received Association message")
+        # print("Received Association message")
         associationMessage = packets.SessionHeader()
         associationMessage.dissect(data)
-        associationMessage.show()
+        # associationMessage.show()
         # TODO Properly validate response, rejection, etc.
 
 
     def handleProtocolMessage(self, data, (host, port)):
-        print("Received Protocol message, handling")
+        # print("Received Protocol message, handling")
         message = packets.SPpdu()
         message.dissect(data)
 
@@ -53,7 +53,7 @@ class EinsteinServer(DatagramProtocol):
             roivapdu = message[packets.ROIVapdu]
 
             if roivapdu.command_type == packets.CMD_CONFIRMED_EVENT_REPORT:
-                print("Received MDSCreateEventReport, sending MDSCreateEventResult")
+                # print("Received MDSCreateEventReport, sending MDSCreateEventResult")
 
                 # Ok! Now to reply!
 
@@ -75,23 +75,26 @@ class EinsteinServer(DatagramProtocol):
                 self.loop = LoopingCall(self.pollForData, ((host, port)))
                 self.loop.start(1)
             else:
-                print("Unknown command_type in roivapdu!")
-                roivapdu.show()
+                pass
+                # print("Unknown command_type in roivapdu!")
+                # roivapdu.show()
         elif packets.ROLRSapdu in message:
             # TODO Implement support for rolling up Remote Operation Linked Results
-            print("ROLRSapdu!")
+            # print("ROLRSapdu!")
             # message.show()
             self.displayResult(message)
         elif packets.ROERapdu in message:
+            pass
             # Error
-            message[packets.ROERapdu].show()
+            # message[packets.ROERapdu].show()
         elif packets.RORSapdu in message:
-            print("Results!")
+            # print("Results!")
             # message.show()
             self.displayResult(message)
         else:
-            print("Unknown message!")
-            message.show()
+            pass
+            # print("Unknown message!")
+            # message.show()
 
 
     def pollForData(self, (host, port)):
@@ -128,8 +131,10 @@ class EinsteinServer(DatagramProtocol):
                     for attribute in attribute_list.value:
                         if attribute.attribute_id == packets.NOM_ATTR_NU_VAL_OBS:
                             obsValue = attribute[packets.NuObsValue]
-                            if obsValue.measurementIsValid():
-                                obsValue.show()
+                            if obsValue.measurementIsValid() and obsValue.physio_id == packets.NOM_PLETH_PULS_RATE:
+                                print("\x1b[2J\x1b[H")
+                                import pyfiglet
+                                print pyfiglet.Figlet(font="roman").renderText(str(obsValue.value))
 
     def startProtocol(self):
         self.loop = None
