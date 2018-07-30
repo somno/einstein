@@ -7,7 +7,7 @@ import vscapture
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
 
-class EinsteinServer(DatagramProtocol):
+class IntellivueInterface(DatagramProtocol):
     """
     Handles communication with a Philips IntelliVue
 
@@ -140,6 +140,6 @@ class EinsteinServer(DatagramProtocol):
             self.loop.stop()
 
 
-reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, EinsteinServer())
+reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface())
 print("Starting...")
 reactor.run()
