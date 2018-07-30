@@ -2,7 +2,7 @@ from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 import socket
-import packets
+import intellivue as packets
 import vscapture
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
