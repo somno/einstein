@@ -10,4 +10,4 @@ install:
   - pipenv install --dev
 
 script:
-  - true
+  - make test
