@@ -299,7 +299,7 @@ class NuObsValue(NonContainerPacket):
         """
         "The measurement is valid if the first octet of the state is all 0."
         """
-        return self.state < 0xFFF
+        return self.state < 0x1000
 
 
 class IpAddressInfo(Packet):
