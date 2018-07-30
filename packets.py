@@ -1,3 +1,9 @@
+"""
+Core structures / functionality for interfacing with a Philips IntelliVue Patient Monitor.
+
+Based on the Philips Data Export Interface Programming Guide - id 4535 642 59271 - the "Philips Interface Programming Guide".
+"""
+
 from scapy.all import *
 
 PORT_CONNECTION_INDICATION = 24005  # PIPG-279
