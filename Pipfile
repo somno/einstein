@@ -9,6 +9,7 @@ name = "pypi"
 twisted = "*"
 scapy = "*"
 pytest = "*"
+klein = "*"
 
 [requires]
 python_version = "2.7"
