@@ -307,7 +307,7 @@ class AttributeList(NonContainerPacket):
     fields_desc = [
         FieldLenField("count", 0, count_of="value"),
         FieldLenField("length", 0, length_of="value"),
-        PacketListField("value", [], AVAType, length_from=lambda p: p.length),
+        PacketListField("value", [], AVAType, length_from=lambda p: p.length, count_from=lambda p: p.count),
     ]
 
 
