@@ -154,6 +154,7 @@ NOM_PLETH_PULS_RATE = 18466
 NOM_PULS_OXIM_PERF_REL = 19376
 NOM_RESP_RATE = 20490
 NOM_SAT_O2_TONE_FREQ = 61448
+NOM_ATTR_NET_ADDR_INFO = 61696
 
 def OIDTypeField(name, default):
     """
@@ -179,6 +180,7 @@ def OIDTypeField(name, default):
         NOM_PULS_OXIM_PERF_REL: "NOM_PULS_OXIM_PERF_REL",
         NOM_RESP_RATE: "NOM_RESP_RATE",
         NOM_SAT_O2_TONE_FREQ: "NOM_SAT_O2_TONE_FREQ",
+        NOM_ATTR_NET_ADDR_INFO: "NOM_ATTR_NET_ADDR_INFO",
     }
     return ShortEnumField(name, default, enum)
 
@@ -298,6 +300,15 @@ class NuObsValue(NonContainerPacket):
         "The measurement is valid if the first octet of the state is all 0."
         """
         return self.state < 0xFFF
+
+
+class IpAddressInfo(Packet):
+    name = "IpAddressInfo"
+    fields_desc = [
+        MACField("mac_address", 0),
+        IPField("ip_address", 0),
+        IPField("subnet_mask", 0),
+    ]
 
 
 PrivateOidField = ShortField  # PIPG-37
@@ -587,6 +598,7 @@ bind_layers(ActionResult, PollMdibDataReply, action_type=NOM_ACT_POLL_MDIB_DATA)
 bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_INDIC)
 bind_layers(AVAType, NuObsValue, attribute_id=NOM_ATTR_NU_VAL_OBS)
 bind_layers(AVAType, AbsoluteTime, attribute_id=NOM_ATTR_TIME_STAMP_ABS)
+bind_layers(AVAType, IpAddressInfo, attribute_id=NOM_ATTR_NET_ADDR_INFO)
 
 
 if __name__ == '__main__':
