@@ -577,7 +577,3 @@ if __name__ == '__main__':
     n = Nomenclature()
     n.dissect(cieDump)
     n.show()
-
-    cii = AttributeList()  # TODO BIND
-    cii.dissect(n.load)
-    cii.show()
