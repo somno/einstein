@@ -298,6 +298,9 @@ class AVAType(Packet):
         LenField("length", None),
     ]
 
+    def extract_padding(self, p):
+        return p[:self.length], p[self.length:]
+
 
 class AttributeList(NonContainerPacket):
     name = "AttributeList"
