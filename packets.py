@@ -291,6 +291,17 @@ class NuObsValue(NonContainerPacket):
         return self.state < 0xFFF
 
 
+PrivateOidField = ShortField  # PIPG-37
+
+
+class VariableLabel(Packet):
+    name = "VariableLabel"
+    fields_desc = [
+        FieldLenField("length", 0, length_of="value"),
+        StrLenField("value", "", length_from="length"),
+    ]
+
+
 class AVAType(Packet):
     name = "AVAType"
     fields_desc = [
