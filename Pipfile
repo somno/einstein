@@ -8,6 +8,7 @@ name = "pypi"
 [packages]
 twisted = "*"
 scapy = "*"
+pytest = "*"
 
 [requires]
 python_version = "2.7"
