@@ -23,6 +23,8 @@ class IntellivueInterface(DatagramProtocol):
         if self.monitors is None:
             self.monitors = {}  # Mapping of MAC -> host, port, lastSeen
 
+        self.associations = set()
+
 
     def datagramReceived(self, data, (host, port)):
         print("Datagram received!")
@@ -43,21 +45,30 @@ class IntellivueInterface(DatagramProtocol):
         mac_address = ""
         if packets.IpAddressInfo in ci:
             mac_address = ci[packets.IpAddressInfo].mac_address
+        else:
+            print("Could not extract MAC address from ConnectionIndication packet from %s:%s: %s" % (host, port, data))
+            return
 
         print("Received ConnectionIndication message from %s / %s / %d" % (mac_address, host, port))
 
         if self.monitors is not None:
             self.monitors[mac_address] = (host, port, datetime.datetime.now().isoformat())
 
-        if self.loop is None:  # TODO Better state representation!
+        if host not in self.associations:
+            print("No association found for %s / %s, associating!" % (mac_address, host))
             self.transport.write(ASSOCIATION_REQUEST_MESSAGE, (host, packets.PORT_PROTOCOL))
 
 
     def handleAssociationMessage(self, data, (host, port)):
-        print("Received Association message")
+        print("Received Association message from %s" % host)
+
         associationMessage = packets.SessionHeader()
         associationMessage.dissect(data)
         associationMessage.show()
+
+        print("Assuming it's a valid association confirmation from %s!" % host)
+        self.associations.add(host)
+
         # TODO Properly validate response, rejection, etc.
 
 
