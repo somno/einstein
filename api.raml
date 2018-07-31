@@ -76,4 +76,17 @@ types:
           200:
             body:
               type: Payload
-      
+              example: |
+                {
+                  "observations":
+                    [
+                      {
+                        "state": "I currently have no idea",
+                        "physio_id": "NOM_PLETH_PULS_RATE",
+                        "value": 42,
+                        "unit_code": "NOM_DIM_BEAT_PER_MIN"
+                      }
+                    ],
+                  "monitor_id": "01:23:45:67:89:ab",
+                  "datetime": "2018-07-31T13:50:35.071597"
+                }
