@@ -27,7 +27,7 @@ class IntellivueInterface(DatagramProtocol):
         self.connections = set()
 
         self.loop = LoopingCall(self.pollConnectedHostsForData)
-        self.loop.start(1)
+        self.loop.start(2)
 
 
     def datagramReceived(self, data, (host, port)):
