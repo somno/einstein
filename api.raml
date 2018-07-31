@@ -7,9 +7,9 @@ types:
     type: object
     properties:
       mac_address:
-        description: "The MAC Address of the monitor. Encoded as an integer to avoid string encoding issues like optional colons, case, etc."
+        description: "The MAC Address of the monitor, encoded as six groups of two lower-case hexadecimal digits separated by colons"
         required: true
-        type: integer
+        type: string
   Observation:
     description: "A measurement, e.g. a pulse of 75 bpm"
     type: object
