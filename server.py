@@ -1,8 +1,10 @@
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
+from twisted.web import server
 import socket
 import intellivue as packets
+import web
 import vscapture
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
@@ -149,7 +151,9 @@ class IntellivueInterface(DatagramProtocol):
         if self.loop is not None:
             self.loop.stop()
 
+monitors = {}
+reactor.listenTCP(8080, server.Site(web.EinsteinWebServer(monitors=monitors).app.resource()))
+reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface(monitors=monitors))
 
-reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface())
 print("Starting...")
 reactor.run()
