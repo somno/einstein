@@ -1,8 +1,10 @@
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
+from twisted.web import server
 import socket
 import intellivue as packets
+import web
 import vscapture
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
@@ -14,6 +16,12 @@ class IntellivueInterface(DatagramProtocol):
     Currently a demo implementation - listens for existence announcements,
     associates, and does a one-time data request.
     """
+
+    def __init__(self, monitors=None):
+        self.monitors = monitors
+        if self.monitors is None:
+            self.monitors = {}  # Mapping of host -> port, MAC, lastSeen
+
 
     def datagramReceived(self, data, (host, port)):
         print("Datagram received!")
@@ -29,6 +37,10 @@ class IntellivueInterface(DatagramProtocol):
 
     def handleConnectionIndication(self, data, (host, port)):
         print("Received ConnectionIndication message, associating")
+
+        if self.monitors is not None:
+            self.monitors[host] = port
+
         ci = packets.ConnectIndication()
         ci.dissect(data)
 
@@ -139,7 +151,9 @@ class IntellivueInterface(DatagramProtocol):
         if self.loop is not None:
             self.loop.stop()
 
+monitors = {}
+reactor.listenTCP(8080, server.Site(web.EinsteinWebServer(monitors=monitors).app.resource()))
+reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface(monitors=monitors))
 
-reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface())
 print("Starting...")
 reactor.run()
