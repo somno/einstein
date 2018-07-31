@@ -15,7 +15,7 @@ class IntellivueInterface(DatagramProtocol):
     Handles communication with a Philips IntelliVue
 
     Currently a demo implementation - listens for existence announcements,
-    associates, and does a one-time data request.
+    associates, connects, and polls all connected monitors for basic data.
     """
 
     def __init__(self, monitors=None):
