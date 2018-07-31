@@ -16,6 +16,13 @@ class IntellivueInterface(DatagramProtocol):
 
     Currently a demo implementation - listens for existence announcements,
     associates, connects, and polls all connected monitors for basic data.
+
+    The MAC address is the canonical form of monitor id;
+    it's an (effectively) immutable property of the device.
+    The IP address is what's actually used internally,
+    because that's the layer things run at,
+    but it's not exposed via the web API,
+    and instead an internal DIY "ARP-alike" mapping is maintained.
     """
 
     def __init__(self, monitors=None):
@@ -23,6 +30,7 @@ class IntellivueInterface(DatagramProtocol):
         if self.monitors is None:
             self.monitors = {}  # Mapping of MAC -> host, port, lastSeen
 
+        self.host_to_mac = {}
         self.associations = set()
         self.connections = set()
 
@@ -54,6 +62,8 @@ class IntellivueInterface(DatagramProtocol):
             return
 
         print("Received ConnectionIndication message from %s / %s / %d" % (mac_address, host, port))
+
+        self.host_to_mac[host] = mac_address
 
         if self.monitors is not None:
             self.monitors[mac_address] = (host, port, datetime.datetime.now().isoformat())
