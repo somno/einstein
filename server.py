@@ -15,6 +15,12 @@ class IntellivueInterface(DatagramProtocol):
     associates, and does a one-time data request.
     """
 
+    def __init__(self, monitors=None):
+        self.monitors = monitors
+        if self.monitors is None:
+            self.monitors = {}  # Mapping of host -> port, MAC, lastSeen
+
+
     def datagramReceived(self, data, (host, port)):
         print("Datagram received!")
 
@@ -29,6 +35,10 @@ class IntellivueInterface(DatagramProtocol):
 
     def handleConnectionIndication(self, data, (host, port)):
         print("Received ConnectionIndication message, associating")
+
+        if self.monitors is not None:
+            self.monitors[host] = port
+
         ci = packets.ConnectIndication()
         ci.dissect(data)
 
