@@ -30,8 +30,9 @@ types:
     description: "The payload of the webhook - metadata and list of observations"
     type: object
     properties:
-      monitor:
-        type: Monitor
+      monitor_id:
+        description: "The MAC Address of the monitor"
+        type: string
       datetime:
         type: datetime
       observations:
