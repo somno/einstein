@@ -2,6 +2,7 @@ from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.web import server
+import datetime
 import socket
 import intellivue as packets
 import web
@@ -20,7 +21,7 @@ class IntellivueInterface(DatagramProtocol):
     def __init__(self, monitors=None):
         self.monitors = monitors
         if self.monitors is None:
-            self.monitors = {}  # Mapping of host -> port, MAC, lastSeen
+            self.monitors = {}  # Mapping of MAC -> host, port, lastSeen
 
 
     def datagramReceived(self, data, (host, port)):
@@ -36,13 +37,17 @@ class IntellivueInterface(DatagramProtocol):
 
 
     def handleConnectionIndication(self, data, (host, port)):
-        print("Received ConnectionIndication message, associating")
-
-        if self.monitors is not None:
-            self.monitors[host] = port
-
         ci = packets.ConnectIndication()
         ci.dissect(data)
+
+        mac_address = ""
+        if packets.IpAddressInfo in ci:
+            mac_address = ci[packets.IpAddressInfo].mac_address
+
+        print("Received ConnectionIndication message from %s / %s / %d" % (mac_address, host, port))
+
+        if self.monitors is not None:
+            self.monitors[mac_address] = (host, port, datetime.datetime.now().isoformat())
 
         if self.loop is None:  # TODO Better state representation!
             self.transport.write(ASSOCIATION_REQUEST_MESSAGE, (host, packets.PORT_PROTOCOL))
