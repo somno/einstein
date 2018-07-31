@@ -24,6 +24,10 @@ class IntellivueInterface(DatagramProtocol):
             self.monitors = {}  # Mapping of MAC -> host, port, lastSeen
 
         self.associations = set()
+        self.connections = set()
+
+        self.loop = LoopingCall(self.pollConnectedHostsForData)
+        self.loop.start(1)
 
 
     def datagramReceived(self, data, (host, port)):
@@ -98,10 +102,7 @@ class IntellivueInterface(DatagramProtocol):
 
                 self.transport.write(str(mdsceResult), (host, port))
 
-                # And now follow up with a basic poll
-
-                self.loop = LoopingCall(self.pollForData, ((host, port)))
-                self.loop.start(1)
+                self.connections.add(host)
             else:
                 print("Unknown command_type in roivapdu!")
                 roivapdu.show()
@@ -120,6 +121,11 @@ class IntellivueInterface(DatagramProtocol):
         else:
             print("Unknown message!")
             message.show()
+
+
+    def pollConnectedHostsForData(self):
+        for host in self.connections:
+            self.pollForData((host, packets.PORT_PROTOCOL))
 
 
     def pollForData(self, (host, port)):
