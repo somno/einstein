@@ -120,14 +120,14 @@ class IntellivueInterface(DatagramProtocol):
             # TODO Implement support for rolling up Remote Operation Linked Results
             print("ROLRSapdu!")
             # message.show()
-            self.displayResult(message)
+            self.handleResult(host, message)
         elif packets.ROERapdu in message:
             # Error
             message[packets.ROERapdu].show()
         elif packets.RORSapdu in message:
             print("Results!")
             # message.show()
-            self.displayResult(message)
+            self.handleResult(host, message)
         else:
             print("Unknown message!")
             message.show()
@@ -174,6 +174,33 @@ class IntellivueInterface(DatagramProtocol):
                             obsValue = attribute[packets.NuObsValue]
                             if obsValue.measurementIsValid():
                                 obsValue.show()
+
+    def handleResult(self, host, message):
+        """
+        We have results! Send appropriate webhooks
+        """
+        payload = {}
+        payload["datetime"] = datetime.datetime.now()
+        payload["monitor_id"] = self.host_to_mac[host]
+
+        observations = []
+        for single_context_poll in message[packets.PollInfoList].value:
+            for observation_poll in single_context_poll.value:
+                for attribute_list in observation_poll.attributes:
+                    for attribute in attribute_list.value:
+                        if attribute.attribute_id == packets.NOM_ATTR_NU_VAL_OBS:
+                            obsValue = attribute[packets.NuObsValue]
+                            if obsValue.measurementIsValid():
+                                observation = {
+                                    "physio_id": obsValue.physio_id  # TODO Stringify
+                                    "state": obsValue.state
+                                    "unit_code": obsValue.unit_code  # TODO Stringify
+                                    "value": obsValue.value
+                                }
+                                observations.append(observation)
+
+        # TODO POST out observations
+
 
     def startProtocol(self):
         self.loop = None
