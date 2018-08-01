@@ -28,6 +28,20 @@ class EinsteinWebServer(object):
         return json.dumps(self.subscriptions)
 
 
+    @app.route('/monitor/<string:monitor_id>/subscribe', methods=['POST'])
+    def subscribe(self, request, monitor_id):
+        # TODO Validate monitor_id
+        # TODO Validate body
+        body = json.load(request.content)
+
+        subs = self.subscriptions.get(monitor_id, [])
+        subs.append(body["callback_url"])
+        self.subscriptions[monitor_id] = subs
+
+        request.setHeader('Content-Type', 'application/json')
+        return json.dumps(subs)
+
+
 if __name__ == "__main__":
     from twisted.internet import reactor
     from twisted.web import server
