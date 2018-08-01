@@ -6,15 +6,26 @@ class EinsteinWebServer(object):
 
     app = Klein()
 
-    def __init__(self, monitors=None):
+    def __init__(self, monitors=None, subscriptions=None):
         self.monitors = monitors
         if self.monitors is None:
             self.monitors = {}
+
+        self.subscriptions = subscriptions
+        if self.subscriptions is None:
+            self.subscriptions = {}
+
 
     @app.route('/monitors')
     def monitors(self, request):
         request.setHeader('Content-Type', 'application/json')
         return json.dumps(self.monitors)
+
+
+    @app.route('/subscriptions')
+    def subscriptions(self, request):
+        request.setHeader('Content-Type', 'application/json')
+        return json.dumps(self.subscriptions)
 
 
 if __name__ == "__main__":
