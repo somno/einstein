@@ -219,10 +219,12 @@ class IntellivueInterface(DatagramProtocol):
         if self.loop is not None:
             self.loop.stop()
 
-monitors = {}
-subscriptions = {}
-reactor.listenTCP(8080, server.Site(web.EinsteinWebServer(monitors=monitors).app.resource()))
-reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface(monitors=monitors, subscriptions=subscriptions))
 
-print("Starting...")
-reactor.run()
+if __name__ == '__main__':
+    monitors = {}
+    subscriptions = {}
+    reactor.listenTCP(8080, server.Site(web.EinsteinWebServer(monitors=monitors).app.resource()))
+    reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface(monitors=monitors, subscriptions=subscriptions))
+
+    print("Starting...")
+    reactor.run()
