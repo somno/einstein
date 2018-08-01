@@ -25,10 +25,14 @@ class IntellivueInterface(DatagramProtocol):
     and instead an internal DIY "ARP-alike" mapping is maintained.
     """
 
-    def __init__(self, monitors=None):
+    def __init__(self, monitors=None, subscriptions=None):
         self.monitors = monitors
         if self.monitors is None:
             self.monitors = {}  # Mapping of MAC -> host, port, lastSeen
+
+        self.subscriptions = subscriptions
+        if self.subscriptions is None:
+            self.subscriptions = {}  # Mapping of MAC -> [Subscriber URL]
 
         self.host_to_mac = {}
         self.associations = set()
@@ -179,9 +183,12 @@ class IntellivueInterface(DatagramProtocol):
         """
         We have results! Send appropriate webhooks
         """
+
+        mac = self.host_to_mac[host]
+
         payload = {}
         payload["datetime"] = datetime.datetime.now()
-        payload["monitor_id"] = self.host_to_mac[host]
+        payload["monitor_id"] = mac
 
         observations = []
         for single_context_poll in message[packets.PollInfoList].value:
@@ -198,8 +205,10 @@ class IntellivueInterface(DatagramProtocol):
                                     "value": obsValue.value
                                 }
                                 observations.append(observation)
+        payload["observations"] = observations
 
-        # TODO POST out observations
+        for subscriber in self.subscriptions.get(mac, []):
+            requests.post(subscriber, data=json.dumps(payload))
 
 
     def startProtocol(self):
@@ -211,8 +220,9 @@ class IntellivueInterface(DatagramProtocol):
             self.loop.stop()
 
 monitors = {}
+subscriptions = {}
 reactor.listenTCP(8080, server.Site(web.EinsteinWebServer(monitors=monitors).app.resource()))
-reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface(monitors=monitors))
+reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface(monitors=monitors, subscriptions=subscriptions))
 
 print("Starting...")
 reactor.run()
