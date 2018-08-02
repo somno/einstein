@@ -86,8 +86,13 @@ class IntellivueInterface(DatagramProtocol):
         associationMessage.dissect(data)
         associationMessage.show()
 
-        print("Assuming it's a valid association confirmation from %s!" % host)
-        self.associations.add(host)
+        t = associationMessage.type
+        if t == packets.AC_SPDU_SI:
+            print("Received Association Confirmation from %s!" % host)
+            self.associations.add(host)
+        elif t in [packets.RF_SPDU_SI, packets.FN_SPDU_SI, packets.DN_SPDU_SI, packets.AB_SPDU_SI]:
+            print("Dropping Association for %s" % host)
+            self.associations.discard(host)
 
         # TODO Properly validate response, rejection, etc.
 
