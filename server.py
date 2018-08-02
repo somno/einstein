@@ -3,12 +3,19 @@ from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.web import server
 import datetime
+import json
 import socket
 import intellivue as packets
+import treq
 import web
 import vscapture
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
+
+def json_serialize(obj):
+    if isinstance(obj, datetime.datetime):
+        return obj.isoformat()
+
 
 class IntellivueInterface(DatagramProtocol):
     """
@@ -197,7 +204,7 @@ class IntellivueInterface(DatagramProtocol):
                             if obsValue.measurementIsValid():
                                 observation = {
                                     "physio_id": obsValue.physio_id,  # TODO Stringify
-                                    "state": obsValue.state,
+                                    # TODO Encode "state": obsValue.state,
                                     "unit_code": obsValue.unit_code,  # TODO Stringify
                                     "value": obsValue.value,
                                 }
@@ -205,7 +212,7 @@ class IntellivueInterface(DatagramProtocol):
         payload["observations"] = observations
 
         for subscriber in self.subscriptions.get(mac, []):
-            requests.post(subscriber, data=json.dumps(payload))
+            treq.post(subscriber, data=json.dumps(payload, default=json_serialize))
 
 
     def startProtocol(self):
