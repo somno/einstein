@@ -2,6 +2,7 @@ from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.web import server
+import api
 import datetime
 import json
 import socket
@@ -31,7 +32,7 @@ class IntellivueInterface(DatagramProtocol):
     def __init__(self, monitors=None, subscriptions=None):
         self.monitors = monitors
         if self.monitors is None:
-            self.monitors = {}  # Mapping of MAC -> host, port, lastSeen
+            self.monitors = {}  # Mapping of MAC -> api.Monitor
 
         self.subscriptions = subscriptions
         if self.subscriptions is None:
@@ -70,7 +71,7 @@ class IntellivueInterface(DatagramProtocol):
         self.host_to_mac[host] = mac_address
 
         if self.monitors is not None:
-            self.monitors[mac_address] = (host, port, datetime.datetime.now().isoformat())
+            self.monitors[mac_address] = api.Monitor(mac_address=mac_address, host=host, port=port, last_seen=datetime.datetime.now())
 
         if host not in self.associations:
             print("No association found for %s / %s, associating!" % (mac_address, host))
