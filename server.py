@@ -233,5 +233,11 @@ if __name__ == '__main__':
     i = IntellivueInterface(monitors=monitors, subscriptions=subscriptions)
     reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, i)
 
+    import os
+    if "USE_DUMMY_MONITOR" in os.environ:
+        print("Loading dummy Monitor")
+        import dummy
+        reactor.listenUDP(packets.PORT_PROTOCOL, dummy.DummyIntellivueMonitor())
+
     print("Starting...")
     reactor.run()
