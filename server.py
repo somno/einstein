@@ -223,8 +223,10 @@ class IntellivueInterface(DatagramProtocol):
 if __name__ == '__main__':
     monitors = {}
     subscriptions = {}
-    reactor.listenTCP(8080, server.Site(web.EinsteinWebServer(monitors=monitors, subscriptions=subscriptions).app.resource()))
-    reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, IntellivueInterface(monitors=monitors, subscriptions=subscriptions))
+    w = web.EinsteinWebServer(monitors=monitors, subscriptions=subscriptions).app.resource()
+    reactor.listenTCP(8080, server.Site(w))
+    i = IntellivueInterface(monitors=monitors, subscriptions=subscriptions)
+    reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, i)
 
     print("Starting...")
     reactor.run()
