@@ -9,13 +9,9 @@ import intellivue as packets
 import treq
 import web
 import vscapture
+from util import json_serialize
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
-
-def json_serialize(obj):
-    if isinstance(obj, datetime.datetime):
-        return obj.isoformat()
-
 
 class IntellivueInterface(DatagramProtocol):
     """
