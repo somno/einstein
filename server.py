@@ -38,9 +38,6 @@ class IntellivueInterface(DatagramProtocol):
         self.associations = set()
         self.connections = set()
 
-        self.loop = LoopingCall(self.pollConnectedHostsForData)
-        self.loop.start(2)
-
 
     def datagramReceived(self, data, (host, port)):
         print("Datagram received!")
@@ -212,7 +209,8 @@ class IntellivueInterface(DatagramProtocol):
 
 
     def startProtocol(self):
-        self.loop = None
+        self.loop = LoopingCall(self.pollConnectedHostsForData)
+        self.loop.start(2)
 
 
     def stopProtocol(self):
