@@ -207,6 +207,10 @@ class IntellivueInterface(DatagramProtocol):
                                 )
                                 observations.append(observation)
 
+        if len(observations) == 0:
+            print("No valid measurements to send")
+            return
+
         mac = self.host_to_mac[host]
 
         payload = api.Payload(
