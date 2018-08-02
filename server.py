@@ -2,6 +2,7 @@ from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.web import server
+import api
 import datetime
 import json
 import socket
@@ -9,13 +10,10 @@ import intellivue as packets
 import treq
 import web
 import vscapture
+from util import json_serialize
+import attr
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
-
-def json_serialize(obj):
-    if isinstance(obj, datetime.datetime):
-        return obj.isoformat()
-
 
 class IntellivueInterface(DatagramProtocol):
     """
@@ -35,7 +33,7 @@ class IntellivueInterface(DatagramProtocol):
     def __init__(self, monitors=None, subscriptions=None):
         self.monitors = monitors
         if self.monitors is None:
-            self.monitors = {}  # Mapping of MAC -> host, port, lastSeen
+            self.monitors = {}  # Mapping of MAC -> api.Monitor
 
         self.subscriptions = subscriptions
         if self.subscriptions is None:
@@ -74,7 +72,7 @@ class IntellivueInterface(DatagramProtocol):
         self.host_to_mac[host] = mac_address
 
         if self.monitors is not None:
-            self.monitors[mac_address] = (host, port, datetime.datetime.now().isoformat())
+            self.monitors[mac_address] = api.Monitor(mac_address=mac_address, host=host, port=port, last_seen=datetime.datetime.now())
 
         if host not in self.associations:
             print("No association found for %s / %s, associating!" % (mac_address, host))
@@ -188,12 +186,6 @@ class IntellivueInterface(DatagramProtocol):
         We have results! Send appropriate webhooks
         """
 
-        mac = self.host_to_mac[host]
-
-        payload = {}
-        payload["datetime"] = datetime.datetime.now()
-        payload["monitor_id"] = mac
-
         observations = []
         for single_context_poll in message[packets.PollInfoList].value:
             for observation_poll in single_context_poll.value:
@@ -202,17 +194,24 @@ class IntellivueInterface(DatagramProtocol):
                         if attribute.attribute_id == packets.NOM_ATTR_NU_VAL_OBS:
                             obsValue = attribute[packets.NuObsValue]
                             if obsValue.measurementIsValid():
-                                observation = {
-                                    "physio_id": packets.ENUM_IDENTIFIERS[obsValue.physio_id],
+                                observation = api.Observation(
+                                    physio_id=packets.ENUM_IDENTIFIERS[obsValue.physio_id],
                                     # TODO Encode "state": obsValue.state,
-                                    "unit_code": packets.ENUM_IDENTIFIERS[obsValue.unit_code],
-                                    "value": obsValue.value,
-                                }
+                                    unit_code=packets.ENUM_IDENTIFIERS[obsValue.unit_code],
+                                    value=obsValue.value,
+                                )
                                 observations.append(observation)
-        payload["observations"] = observations
+
+        mac = self.host_to_mac[host]
+
+        payload = api.Payload(
+            monitor_id=mac,
+            datetime=datetime.datetime.now(),
+            observations=observations
+        )
 
         for subscriber in self.subscriptions.get(mac, []):
-            treq.post(subscriber, data=json.dumps(payload, default=json_serialize))
+            treq.post(subscriber, data=json.dumps(attr.asdict(payload), default=json_serialize))
 
 
     def startProtocol(self):

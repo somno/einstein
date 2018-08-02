@@ -1,5 +1,7 @@
 from klein import Klein
 import json
+from util import json_serialize
+import attr
 
 
 class EinsteinWebServer(object):
@@ -19,7 +21,8 @@ class EinsteinWebServer(object):
     @app.route('/monitors')
     def monitors(self, request):
         request.setHeader('Content-Type', 'application/json')
-        return json.dumps(self.monitors)
+        monitors = [attr.asdict(monitor) for monitor in self.monitors.values()]
+        return json.dumps(monitors, default=json_serialize)
 
 
     @app.route('/subscriptions')
