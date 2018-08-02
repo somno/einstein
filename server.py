@@ -11,6 +11,7 @@ import treq
 import web
 import vscapture
 from util import json_serialize
+import attr
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
 
@@ -185,12 +186,6 @@ class IntellivueInterface(DatagramProtocol):
         We have results! Send appropriate webhooks
         """
 
-        mac = self.host_to_mac[host]
-
-        payload = {}
-        payload["datetime"] = datetime.datetime.now()
-        payload["monitor_id"] = mac
-
         observations = []
         for single_context_poll in message[packets.PollInfoList].value:
             for observation_poll in single_context_poll.value:
@@ -199,17 +194,24 @@ class IntellivueInterface(DatagramProtocol):
                         if attribute.attribute_id == packets.NOM_ATTR_NU_VAL_OBS:
                             obsValue = attribute[packets.NuObsValue]
                             if obsValue.measurementIsValid():
-                                observation = {
-                                    "physio_id": packets.ENUM_IDENTIFIERS[obsValue.physio_id],
+                                observation = api.Observation(
+                                    physio_id=packets.ENUM_IDENTIFIERS[obsValue.physio_id],
                                     # TODO Encode "state": obsValue.state,
-                                    "unit_code": packets.ENUM_IDENTIFIERS[obsValue.unit_code],
-                                    "value": obsValue.value,
-                                }
+                                    unit_code=packets.ENUM_IDENTIFIERS[obsValue.unit_code],
+                                    value=obsValue.value,
+                                )
                                 observations.append(observation)
-        payload["observations"] = observations
+
+        mac = self.host_to_mac[host]
+
+        payload = api.Payload(
+            monitor_id=mac,
+            datetime=datetime.datetime.now(),
+            observations=observations
+        )
 
         for subscriber in self.subscriptions.get(mac, []):
-            treq.post(subscriber, data=json.dumps(payload, default=json_serialize))
+            treq.post(subscriber, data=json.dumps(attr.asdict(payload), default=json_serialize))
 
 
     def startProtocol(self):
