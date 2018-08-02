@@ -203,9 +203,9 @@ class IntellivueInterface(DatagramProtocol):
                             obsValue = attribute[packets.NuObsValue]
                             if obsValue.measurementIsValid():
                                 observation = {
-                                    "physio_id": obsValue.physio_id,  # TODO Stringify
+                                    "physio_id": packets.ENUM_IDENTIFIERS[obsValue.physio_id],
                                     # TODO Encode "state": obsValue.state,
-                                    "unit_code": obsValue.unit_code,  # TODO Stringify
+                                    "unit_code": packets.ENUM_IDENTIFIERS[obsValue.unit_code],
                                     "value": obsValue.value,
                                 }
                                 observations.append(observation)
