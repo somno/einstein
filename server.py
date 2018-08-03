@@ -220,7 +220,7 @@ class IntellivueInterface(DatagramProtocol):
         )
 
         for subscriber in self.subscriptions.get(mac, []):
-            treq.post(subscriber, data=json.dumps(attr.asdict(payload), default=json_serialize))
+            treq.post(subscriber, data=json.dumps(attr.asdict(payload), default=json_serialize), headers={b'Content-Type': [b'application/json']})
 
 
     def startProtocol(self):
