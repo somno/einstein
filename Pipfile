@@ -12,6 +12,7 @@ pytest = "*"
 klein = "*"
 treq = "*"
 attrs = "*"
+structlog = "*"
 
 [requires]
 python_version = "2.7"
