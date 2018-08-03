@@ -17,3 +17,12 @@ def test_ci_parsing():
     assert n.ro_type == intellivue.ROIV_APDU
     assert n.command_type == intellivue.CMD_EVENT_REPORT
     assert n.event_type == intellivue.NOM_NOTI_MDS_CONNECT_INDIC
+
+
+def test_floattypefield():
+    obs_prefix = "\x00\x00" * 3   # physio_id, state, unit_code - dummy values
+    obs = obs_prefix + "\xff\x00\x00\x0f"
+
+    n = intellivue.NuObsValue(obs)
+
+    assert n.value == 1.5
