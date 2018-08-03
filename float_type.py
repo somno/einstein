@@ -42,4 +42,4 @@ def decode(encoded):
     return mantissa * (10 ** exponent)
 
 def encode(num):
-    return num
+    raise NotImplemented

@@ -5,6 +5,7 @@ Based on the Philips Data Export Interface Programming Guide - id 4535 642 59271
 """
 
 from scapy.all import *
+import float_type
 
 PORT_CONNECTION_INDICATION = 24005  # PIPG-279
 PORT_PROTOCOL = 24105  # PIPG-29
@@ -302,7 +303,12 @@ def MeasurementStateField(name, default):  # PIPG-76
     return FlagsField(name, default, 16, flags)
 
 
-FLOATTypeField = XIntField  # TODO
+class FLOATTypeField(IntField):  # PIPG-40
+    def i2m(self, pkt, x):
+        return float_type.encode(x)
+
+    def m2i(self, pkt, x):
+        return float_type.decode(x)
 
 
 class NuObsValue(NonContainerPacket):
