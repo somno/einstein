@@ -12,8 +12,11 @@ import web
 import vscapture
 from util import json_serialize
 import attr
+import structlog
 
 ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
+
+log = structlog.get_logger()
 
 class IntellivueInterface(DatagramProtocol):
     """
@@ -45,7 +48,7 @@ class IntellivueInterface(DatagramProtocol):
 
 
     def datagramReceived(self, data, (host, port)):
-        print("Datagram received!")
+        log.debug("Datagram received!", host=host, port=port)
 
         if port == packets.PORT_CONNECTION_INDICATION:
             self.handleConnectionIndication(data, (host, port))
@@ -64,10 +67,10 @@ class IntellivueInterface(DatagramProtocol):
         if packets.IpAddressInfo in ci:
             mac_address = ci[packets.IpAddressInfo].mac_address
         else:
-            print("Could not extract MAC address from ConnectionIndication packet from %s:%s: %s" % (host, port, data))
+            log.warning("Could not extract MAC address from ConnectionIndication packet", host=host, port=port)
             return
 
-        print("Received ConnectionIndication message from %s / %s / %d" % (mac_address, host, port))
+        log.info("Received ConnectionIndication message", mac_address=mac_address, host=host, port=port)
 
         self.host_to_mac[host] = mac_address
 
@@ -75,12 +78,12 @@ class IntellivueInterface(DatagramProtocol):
             self.monitors[mac_address] = api.Monitor(mac_address=mac_address, host=host, port=port, last_seen=datetime.datetime.now())
 
         if host not in self.associations:
-            print("No association found for %s / %s, associating!" % (mac_address, host))
+            log.info("Initiating Association!", mac_address=mac_address, host=host)
             self.transport.write(ASSOCIATION_REQUEST_MESSAGE, (host, packets.PORT_PROTOCOL))
 
 
     def handleAssociationMessage(self, data, (host, port)):
-        print("Received Association message from %s" % host)
+        log.info("Received Association message", host=host)
 
         associationMessage = packets.SessionHeader()
         associationMessage.dissect(data)
@@ -88,17 +91,17 @@ class IntellivueInterface(DatagramProtocol):
 
         t = associationMessage.type
         if t == packets.AC_SPDU_SI:
-            print("Received Association Confirmation from %s!" % host)
+            log.info("Received Association Confirmation!", host=host)
             self.associations.add(host)
         elif t in [packets.RF_SPDU_SI, packets.FN_SPDU_SI, packets.DN_SPDU_SI, packets.AB_SPDU_SI]:
-            print("Dropping Association for %s" % host)
+            log.info("Dropping Association", host=host)
             self.associations.discard(host)
 
         # TODO Properly validate response, rejection, etc.
 
 
     def handleProtocolMessage(self, data, (host, port)):
-        print("Received Protocol message, handling")
+        log.debug("Received Protocol message, handling")
         message = packets.SPpdu()
         message.dissect(data)
 
@@ -106,7 +109,7 @@ class IntellivueInterface(DatagramProtocol):
             roivapdu = message[packets.ROIVapdu]
 
             if roivapdu.command_type == packets.CMD_CONFIRMED_EVENT_REPORT:
-                print("Received MDSCreateEventReport, sending MDSCreateEventResult")
+                log.info("Received MDSCreateEventReport, sending MDSCreateEventResult", host=host, port=port)
 
                 # Ok! Now to reply!
 
@@ -125,22 +128,22 @@ class IntellivueInterface(DatagramProtocol):
 
                 self.connections.add(host)
             else:
-                print("Unknown command_type in roivapdu!")
+                log.warning("Unknown command_type in roivapdu!", host=host, port=port, roivapdu=roivapdu)
                 roivapdu.show()
         elif packets.ROLRSapdu in message:
             # TODO Implement support for rolling up Remote Operation Linked Results
-            print("ROLRSapdu!")
+            log.debug("ROLRSapdu!")
             # message.show()
             self.handleResult(host, message)
         elif packets.ROERapdu in message:
             # Error
             message[packets.ROERapdu].show()
         elif packets.RORSapdu in message:
-            print("Results!")
+            log.debug("Results!")
             # message.show()
             self.handleResult(host, message)
         else:
-            print("Unknown message!")
+            log.warning("Unknown message!")
             message.show()
 
 
@@ -208,7 +211,7 @@ class IntellivueInterface(DatagramProtocol):
                                 observations.append(observation)
 
         if len(observations) == 0:
-            print("No valid measurements to send")
+            log.debug("No valid measurements to send")
             return
 
         mac = self.host_to_mac[host]
@@ -241,5 +244,5 @@ if __name__ == '__main__':
     i = IntellivueInterface(monitors=monitors, subscriptions=subscriptions)
     reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, i)
 
-    print("Starting...")
+    log.info("Starting...")
     reactor.run()
