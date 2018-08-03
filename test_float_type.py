@@ -6,6 +6,15 @@ def test_basic():
     assert float_type.decode(1) == 1
 
 
+def test_count_hex_digits():
+    assert float_type.count_hex_digits(0x0) == 0
+    assert float_type.count_hex_digits(0x1) == 1
+    assert float_type.count_hex_digits(0x10) == 2
+    assert float_type.count_hex_digits(0x01) == 1
+    assert float_type.count_hex_digits(0x11) == 2
+    assert float_type.count_hex_digits(0x100) == 3
+
+
 def test_documented_examples():
     # PIPG-41
 

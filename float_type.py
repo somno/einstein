@@ -9,9 +9,15 @@ binary/decimal representation issues that IEEE-754 has.
 PIPG-40
 """
 
+import math
+
+
+def count_hex_digits(num):
+    return int(math.ceil(math.log(num + 1) / math.log(16)))
+
 
 def decode(encoded):
-    if len(hex(encoded)) > (2 + 32/4):  # Check this is a 32-bit value!
+    if count_hex_digits(encoded) > 8:
         raise ValueError
 
     mantissa = encoded & 0x00FFFFFF
