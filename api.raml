@@ -37,6 +37,15 @@ types:
         type: datetime
       observations:
         type: Observation[]
+  Subscription:
+    type: object
+    properties:
+      subscription_id:
+        type: string
+      monitor_id:
+        type: string
+      url:
+        type: string
 
 
 /api:
@@ -54,13 +63,24 @@ types:
           body:
             example: |
               {
-                "callbackURL": "https://example.com/callback/"
+                "url": "https://example.com/callback/"
               }
-      /unsubscribe-all:
-        post:
-          description: "Drops all subscriptions to a given monitor. Expect this to go away and be replaced by something better like DELETEing an id"
+          responses:
+            201:
+              body:
+                example: |
+                  { "subscription_id": "loremipsum" }
+  /subscribe:
+    /{subscription_id}:
+      delete:
 /debug:
   description: "Testing utilities etc. - anything here might change"
+  /subscriptions:
+    get:
+      responses:
+        200:
+          body:
+            Subscription[]
   /examples:
     /observation:
       get:
