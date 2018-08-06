@@ -39,7 +39,7 @@ class EinsteinWebServer(object):
         body = json.load(request.content)
         url = body["url"]
         sub = api.Subscription(monitor_id=monitor_id, url=url)
-        self.subscriptions[monitor_id] = sub
+        self.subscriptions[sub.subscription_id] = sub
 
         request.setHeader('Content-Type', 'application/json')
         return json.dumps(attr.asdict(sub))
