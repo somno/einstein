@@ -19,7 +19,7 @@ class EinsteinWebServer(object):
             self.subscriptions = {}
 
 
-    @app.route('/monitors')
+    @app.route('/api/monitors')
     def monitors(self, request):
         request.setHeader('Content-Type', 'application/json')
         monitors = [attr.asdict(monitor) for monitor in self.monitors.values()]
@@ -32,7 +32,7 @@ class EinsteinWebServer(object):
         return json.dumps([attr.asdict(s) for s in self.subscriptions.values()])
 
 
-    @app.route('/monitor/<string:monitor_id>/subscribe', methods=['POST'])
+    @app.route('/api/monitor/<string:monitor_id>/subscribe', methods=['POST'])
     def subscribe(self, request, monitor_id):
         # TODO Validate monitor_id
         # TODO Validate body
@@ -44,7 +44,7 @@ class EinsteinWebServer(object):
         request.setHeader('Content-Type', 'application/json')
         return json.dumps(attr.asdict(sub))
 
-    @app.route('/subscribe/<string:subscription_id>', methods=['DELETE'])
+    @app.route('/api/subscribe/<string:subscription_id>', methods=['DELETE'])
     def unsubscribe(self, request, subscription_id):
         if subscription_id not in self.subscriptions:
             request.setResponseCode(404)
