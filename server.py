@@ -241,7 +241,8 @@ if __name__ == '__main__':
     monitors = {}
     subscriptions = {}
     w = web.EinsteinWebServer(monitors=monitors, subscriptions=subscriptions).app.resource()
-    reactor.listenTCP(8080, server.Site(w))
+    import os
+    reactor.listenTCP(int(os.getenv("PORT", 8080)), server.Site(w))
     i = IntellivueInterface(monitors=monitors, subscriptions=subscriptions)
     reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, i)
 
