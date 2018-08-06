@@ -40,7 +40,7 @@ class IntellivueInterface(DatagramProtocol):
 
         self.subscriptions = subscriptions
         if self.subscriptions is None:
-            self.subscriptions = {}  # Mapping of MAC -> [Subscriber URL]
+            self.subscriptions = {}  # Mapping of SubscriptionId -> Subscription
 
         self.host_to_mac = {}
         self.associations = set()
@@ -222,8 +222,9 @@ class IntellivueInterface(DatagramProtocol):
             observations=observations
         )
 
-        for subscriber in self.subscriptions.get(mac, []):
-            treq.post(subscriber, data=json.dumps(attr.asdict(payload), default=json_serialize), headers={b'Content-Type': [b'application/json']})
+        for subscription in self.subscriptions.values():
+            if subscription.monitor_id == mac:
+                treq.post(subscription.url, data=json.dumps(attr.asdict(payload), default=json_serialize), headers={b'Content-Type': [b'application/json']})
 
 
     def startProtocol(self):

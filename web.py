@@ -2,6 +2,7 @@ from klein import Klein
 import json
 from util import json_serialize
 import attr
+import api
 
 
 class EinsteinWebServer(object):
@@ -28,7 +29,7 @@ class EinsteinWebServer(object):
     @app.route('/subscriptions')
     def subscriptions(self, request):
         request.setHeader('Content-Type', 'application/json')
-        return json.dumps(self.subscriptions)
+        return json.dumps([attr.asdict(s) for s in self.subscriptions.values()])
 
 
     @app.route('/monitor/<string:monitor_id>/subscribe', methods=['POST'])
@@ -36,13 +37,12 @@ class EinsteinWebServer(object):
         # TODO Validate monitor_id
         # TODO Validate body
         body = json.load(request.content)
-
-        subs = self.subscriptions.get(monitor_id, [])
-        subs.append(body["callback_url"])
-        self.subscriptions[monitor_id] = subs
+        url = body["url"]
+        sub = api.Subscription(monitor_id=monitor_id, url=url)
+        self.subscriptions[monitor_id] = sub
 
         request.setHeader('Content-Type', 'application/json')
-        return json.dumps(subs)
+        return json.dumps(attr.asdict(sub))
 
 
 if __name__ == "__main__":
