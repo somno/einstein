@@ -44,6 +44,15 @@ class EinsteinWebServer(object):
         request.setHeader('Content-Type', 'application/json')
         return json.dumps(attr.asdict(sub))
 
+    @app.route('/subscribe/<string:subscription_id>', methods=['DELETE'])
+    def unsubscribe(self, request, subscription_id):
+        if subscription_id not in self.subscriptions:
+            request.setResponseCode(404)
+            return
+        else:
+            del self.subscriptions[subscription_id]
+            return
+
 
 if __name__ == "__main__":
     from twisted.internet import reactor
