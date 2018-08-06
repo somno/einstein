@@ -1,6 +1,7 @@
 import attr
 import datetime
 import intellivue
+import uuid
 
 
 @attr.s
@@ -24,3 +25,9 @@ class Payload(object):
     monitor_id = attr.ib()
     datetime = attr.ib(factory=datetime.datetime.now)
     observations = attr.ib(factory=list)
+
+@attr.s
+class Subscription(object):
+    monitor_id = attr.ib()
+    url = attr.ib()
+    subscription_id = attr.ib(factory=lambda: str(uuid.uuid4()))
