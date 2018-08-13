@@ -6,6 +6,11 @@ def test_basic():
     assert float_type.decode(1) == 1
 
 
+def test_too_big():
+    with pytest.raises(ValueError):
+        float_type.decode(0xffffffffffffffffffff)
+
+
 def test_count_hex_digits():
     assert float_type.count_hex_digits(0x0) == 0
     assert float_type.count_hex_digits(0x1) == 1
@@ -27,6 +32,23 @@ def test_documented_examples():
 
 def test_inferred_special_values():
     assert math.isnan(float_type.decode(0x007fffff))
+    assert math.isnan(float_type.decode(0x00800000))  # "Not at this resolution"
+
+
+def test_positive_infinity():
+    posinf = float_type.decode(0x007ffffe)
+    assert posinf > 0
+    assert math.isinf(posinf)
+
+
+def test_negative_infinity():
+    neginf = float_type.decode(0x00800002)
+    assert neginf < 0
+    assert math.isinf(neginf)
+
+
+def test_negative():
+    assert float_type.decode(0x00ffffff) == -1
 
 
 # There is no decode-encode identity because encodings aren't normalised
