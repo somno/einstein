@@ -47,6 +47,10 @@ def test_negative_infinity():
     assert math.isinf(neginf)
 
 
+def test_negative():
+    assert float_type.decode(0x00ffffff) == -1
+
+
 # There is no decode-encode identity because encodings aren't normalised
 @pytest.mark.skip(reason="No decode implementation and no Hypothesis hookup yet")
 def test_encode_decode_identity(num):
