@@ -28,9 +28,9 @@ def decode(encoded):
     elif mantissa == 0x800000:
         return float("NaN") # TODO Need an encoding for NRes ("Not at this resolution")
     elif mantissa == 0x7ffffe:
-        return Inf
+        return float("Inf")
     elif mantissa == 0x800002:
-        return -Inf
+        return float("-Inf")
 
     if mantissa >> 23 == 1:  # Is the most significant (i.e. sign) bit set)
         mantissa = mantissa - 0xFFFFFF - 1

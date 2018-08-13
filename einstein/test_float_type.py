@@ -35,6 +35,18 @@ def test_inferred_special_values():
     assert math.isnan(float_type.decode(0x00800000))  # "Not at this resolution"
 
 
+def test_positive_infinity():
+    posinf = float_type.decode(0x007ffffe)
+    assert posinf > 0
+    assert math.isinf(posinf)
+
+
+def test_negative_infinity():
+    neginf = float_type.decode(0x00800002)
+    assert neginf < 0
+    assert math.isinf(neginf)
+
+
 # There is no decode-encode identity because encodings aren't normalised
 @pytest.mark.skip(reason="No decode implementation and no Hypothesis hookup yet")
 def test_encode_decode_identity(num):
