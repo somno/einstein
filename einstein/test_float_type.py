@@ -32,6 +32,7 @@ def test_documented_examples():
 
 def test_inferred_special_values():
     assert math.isnan(float_type.decode(0x007fffff))
+    assert math.isnan(float_type.decode(0x00800000))  # "Not at this resolution"
 
 
 # There is no decode-encode identity because encodings aren't normalised
