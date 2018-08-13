@@ -1,4 +1,6 @@
-from scapy import *
+from scapy.all import *
+
+from . import NonContainerPacket
 
 """
 The LI field contains the length of the appended data (including all presentation data). The length
