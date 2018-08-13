@@ -1,6 +1,6 @@
 .PHONY: test
 test:
-	pipenv run pytest
+	pipenv run pytest --cov=einstein
 
 .PHONY: run
 run:
