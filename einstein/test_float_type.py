@@ -6,6 +6,11 @@ def test_basic():
     assert float_type.decode(1) == 1
 
 
+def test_too_big():
+    with pytest.raises(ValueError):
+        float_type.decode(0xffffffffffffffffffff)
+
+
 def test_count_hex_digits():
     assert float_type.count_hex_digits(0x0) == 0
     assert float_type.count_hex_digits(0x1) == 1
