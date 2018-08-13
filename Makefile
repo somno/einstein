@@ -4,4 +4,4 @@ test:
 
 .PHONY: run
 run:
-	pipenv run python server.py
+	pipenv run python einstein/server.py
