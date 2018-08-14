@@ -339,34 +339,6 @@ class ActionArgument(Packet):
     ]
 
 
-NOM_PART_OBJ = 1
-NOM_PART_SCADA = 2
-NOM_PART_EVT = 3
-NOM_PART_DIM = 4
-NOM_PART_PGRP = 6
-NOM_PART_INFRASTRUCT = 8
-
-
-def NomPartitionField(name, default):
-    enum = {
-        NOM_PART_OBJ: "NOM_PART_OBJ",
-        NOM_PART_SCADA: "NOM_PART_SCADA",
-        NOM_PART_EVT: "NOM_PART_EVT",
-        NOM_PART_DIM: "NOM_PART_DIM",
-        NOM_PART_PGRP: "NOM_PART_PGRP",
-        NOM_PART_INFRASTRUCT: "NOM_PART_INFRASTRUCT",
-    }
-    return ShortEnumField(name, default, enum)
-
-
-class TYPE(NonContainerPacket):  # PIPG-37
-    name = "TYPE"
-    fields_desc = [
-        NomPartitionField("partition", 0),
-        OIDTypeField("code", 0),
-    ]
-
-
 class PollMdibDataReq(NonContainerPacket):
     name = "PollMdibDataReq"
     fields_desc = [

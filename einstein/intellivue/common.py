@@ -52,3 +52,23 @@ def OIDTypeField(name, default):  # PIPG-37
 
 
 PrivateOidField = ShortField  # PIPG-37
+
+
+def NomPartitionField(name, default):  # PIPG-37
+    enum = {
+        NOM_PART_OBJ: "NOM_PART_OBJ",
+        NOM_PART_SCADA: "NOM_PART_SCADA",
+        NOM_PART_EVT: "NOM_PART_EVT",
+        NOM_PART_DIM: "NOM_PART_DIM",
+        NOM_PART_PGRP: "NOM_PART_PGRP",
+        NOM_PART_INFRASTRUCT: "NOM_PART_INFRASTRUCT",
+    }
+    return ShortEnumField(name, default, enum)
+
+
+class TYPE(NonContainerPacket):  # PIPG-37
+    name = "TYPE"
+    fields_desc = [
+        NomPartitionField("partition", 0),
+        OIDTypeField("code", 0),
+    ]
