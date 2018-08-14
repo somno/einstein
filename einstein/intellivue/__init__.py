@@ -11,6 +11,7 @@ from .common import *
 from .protocol_command_structure import *
 from .protocol_commands import *
 from .association import *
+from .attribute_data_types import *
 
 PORT_CONNECTION_INDICATION = 24005  # PIPG-279
 PORT_PROTOCOL = 24105  # PIPG-29
