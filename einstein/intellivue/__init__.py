@@ -14,14 +14,6 @@ from .protocol_commands import *
 PORT_CONNECTION_INDICATION = 24005  # PIPG-279
 PORT_PROTOCOL = 24105  # PIPG-29
 
-class Nomenclature(Packet):
-    name = "Nomenclature"
-    fields_desc = [
-        ShortField("Magic", 0),
-        ByteField("MajorVersion", 0),
-        ByteField("MinorVersion", 0),
-    ]
-
 
 INVALID = 0x8000
 QUESTIONABLE = 0x4000
@@ -87,22 +79,6 @@ class IpAddressInfo(Packet):
         IPField("ip_address", 0),
         IPField("subnet_mask", 0),
     ]
-
-
-def ConnectIndication():
-    return Nomenclature() / ROapdus() / ROIVapdu() / EventReportArgument() / AttributeList()
-
-
-class MDSCreateInfo(NonContainerPacket):
-    name = "MDSCreateInfo"
-    fields_desc = [
-        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
-        PacketField("attribute_list", AttributeList(), AttributeList),
-    ]
-
-
-def MDSCreateEventReport():
-    return SPpdu() / ROapdus() / ROIVapdu() / EventReportArgument() / MDSCreateInfo()
 
 
 class MDSCreateInfo(NonContainerPacket):  # PIPG-54
