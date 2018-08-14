@@ -81,8 +81,27 @@ class AssocReqPresentationHeaderData(Packet):
     ]
 
 
+
+"""
+The ASNLength contains the length of the MDSEUserInfoStd. It uses the following encoding rules:
+- if the length is less or equal to 127, ASNLength is one byte, containing the actual length.
+- if the length is greater than 127, ASNLength is several bytes long. The most significant bit (bit 0) of the first byte is set to 1, the bits 1 to 7 indicate the number of bytes which are appended to encode the actual length.
+"""
+ASNLengthField = FieldLenField  # PIPG-68 TODO: Encode this properly
+
+
+class MDSEUserInfoStd(Packet):  # PIPG-68
+    name = "MDSEUserInfoStd"
+    fields_desc = [
+    ]
+
+
 class AssocReqUserData(Packet): # PIPG-65
-    pass
+    name = "AssocReqUserData"
+    fields_desc = [
+        ASNLengthField("ASNLength", None, length_of="MDSEUserInfoStd"),
+        PacketField("MDSEUserInfoStd", MDSEUserInfoStd(), MDSEUserInfoStd),
+    ]
 
 
 class AssocReqPresentationTrailer(Packet):
