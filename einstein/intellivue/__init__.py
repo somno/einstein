@@ -132,16 +132,6 @@ def MDSCreateEventResult():  # PIPG-55
     ]
 
 
-class ActionArgument(Packet):
-    name = "ActionArgument"
-    fields_desc = [
-        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
-        IntField("scope", 0),
-        OIDTypeField("action_type", 0),
-        LenField("length", None),
-    ]
-
-
 class PollMdibDataReq(NonContainerPacket):
     name = "PollMdibDataReq"
     fields_desc = [
