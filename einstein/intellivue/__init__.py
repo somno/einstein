@@ -81,57 +81,6 @@ class IpAddressInfo(Packet):
     ]
 
 
-class PollMdibDataReq(NonContainerPacket):
-    name = "PollMdibDataReq"
-    fields_desc = [
-        ShortField("poll_number", 0),
-        PacketField("polled_obj_type", TYPE(), TYPE),
-        OIDTypeField("polled_attr_grp", 0),
-    ]
-
-
-class ObservationPoll(NonContainerPacket):  # PIPG-58
-    name = "ObservationPoll"
-    fields_desc = [
-        HandleField("obj_handle", 0),
-        PacketField("attributes", AttributeList(), AttributeList),
-    ]
-
-
-class SingleContextPoll(NonContainerPacket):  # PIPG-58
-    """
-    This inlines the poll_info structure, but it doesn't seem to be used elsewhere
-    """
-    name = "SingleContextPoll"
-    fields_desc = [
-        MdsContextField("context_id", 0),
-        FieldLenField("count", 0, count_of="value"),
-        FieldLenField("length", 0, length_of="value"),
-        PacketListField("value", [], ObservationPoll, length_from=lambda p: p.length),
-    ]
-
-
-class PollInfoList(Packet):
-    name = "PollInfoList"
-    fields_desc = [
-        FieldLenField("count", 0, count_of="value"),
-        FieldLenField("length", 0, length_of="value"),
-        PacketListField("value", [], SingleContextPoll, length_from=lambda p: p.length),
-    ]
-
-
-class PollMdibDataReply(Packet):
-    name = "PollMdibDataReply"
-    fields_desc = [
-        ShortField("poll_number", 0),
-        RelativeTimeField("rel_time_stamp", 0),
-        PacketField("abs_time_stamp", AbsoluteTime(), AbsoluteTime),
-        PacketField("polled_obj_type", TYPE(), TYPE),
-        OIDTypeField("polled_attr_grp", 0),
-        PacketField("poll_info_list", PollInfoList(), PollInfoList),
-    ]
-
-
 ReleaseRequest = "\x09\x18\xC1\x16\x61\x80\x30\x80\x02\x01\x01\xA0\x80\x62\x80\x80\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"  # PIPG-301
 
 
