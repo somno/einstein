@@ -212,23 +212,6 @@ class ManagedObjectId(NonContainerPacket):
     ]
 
 
-RelativeTimeField = IntField
-
-
-class AbsoluteTime(NonContainerPacket):
-    name = "AbsoluteTime"
-    fields_desc = [
-        ByteField("century", 0),
-        ByteField("year", 0),
-        ByteField("month", 0),
-        ByteField("day", 0),
-        ByteField("hour", 0),
-        ByteField("minute", 0),
-        ByteField("second", 0),
-        ByteField("sec_fractions", 0),
-    ]
-
-
 class EventReportArgument(Packet):
     name = "EventReportArgument"
     fields_desc = [

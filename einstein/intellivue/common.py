@@ -17,3 +17,20 @@ class NonContainerPacket(Packet):
 
     def extract_padding(self, p):
         return "", p
+
+
+class AbsoluteTime(NonContainerPacket):  # PIPG-36
+    name = "AbsoluteTime"
+    fields_desc = [
+        ByteField("century", 0),
+        ByteField("year", 0),
+        ByteField("month", 0),
+        ByteField("day", 0),
+        ByteField("hour", 0),
+        ByteField("minute", 0),
+        ByteField("second", 0),
+        ByteField("sec_fractions", 0),
+    ]
+
+
+RelativeTimeField = IntField  # PIPG-36
