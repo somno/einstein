@@ -99,3 +99,6 @@ class AssociationRequestMessage(NonContainerPacket):
         PacketField("AssocReqUserData", AssocReqUserData(), AssocReqUserData),
         PacketField("AssocReqPresentationTrailer", AssocReqPresentationTrailer(), AssocReqPresentationTrailer),
     ]
+
+
+ReleaseRequest = "\x09\x18\xC1\x16\x61\x80\x30\x80\x02\x01\x01\xA0\x80\x62\x80\x80\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"  # PIPG-301
