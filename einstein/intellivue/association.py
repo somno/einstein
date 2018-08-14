@@ -12,7 +12,25 @@ Examples:
 L = 15 is encoded as 0x0f
 L = 256 is encoded as {0xff,0x01,0x00}
 """
-LIField = LenField  # TODO
+class LIField(Field):
+    def i2m(self, pkt, x):
+        if x is None:
+            x = len(pkt.payload)
+        return x
+
+    def addfield(self, pkt, s, val):
+        val = self.i2m(pkt, val)
+        if val < 255:
+            b = struct.pack("B", val)
+        else:
+            b = '\xff' + struct.pack("!H", val)
+        return s + b
+
+    def getfield(self, pkt, s):
+        if s[0] == '\xff':
+            return s[3:], self.m2i(pkt, struct.unpack("!H", s[1:3])[0])
+        else:
+            return s[1:], self.m2i(pkt, struct.unpack("B", s[:1])[0])
 
 
 CN_SPDU_SI = 0x0D  # PIPG-67 "CN_SPDU_SI: A Session Connect header. The message contains an Association Request"
