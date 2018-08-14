@@ -22,26 +22,6 @@ class Nomenclature(Packet):
     ]
 
 
-class EventReportArgument(Packet):
-    name = "EventReportArgument"
-    fields_desc = [
-        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
-        RelativeTimeField("event_time", 0),
-        OIDTypeField("event_type", 0),
-        LenField("length", None),
-    ]
-
-
-class EventReportResult(NonContainerPacket):
-    name = "EventReportResult"
-    fields_desc = [
-        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
-        RelativeTimeField("current_time", 0),
-        OIDTypeField("event_type", 0),
-        LenField("length", None),
-    ]
-
-
 INVALID = 0x8000
 QUESTIONABLE = 0x4000
 UNAVAILABLE = 0x2000

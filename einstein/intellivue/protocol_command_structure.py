@@ -102,3 +102,23 @@ class ROERapdu(NonContainerPacket):  # PIPG-45
         ErrorValueField("error_value", 0),
         LenField("length", None),
     ]
+
+
+class EventReportArgument(Packet):  # PIPG-48
+    name = "EventReportArgument"
+    fields_desc = [
+        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
+        RelativeTimeField("event_time", 0),
+        OIDTypeField("event_type", 0),
+        LenField("length", None),
+    ]
+
+
+class EventReportResult(NonContainerPacket):  # PIPG-48
+    name = "EventReportResult"
+    fields_desc = [
+        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
+        RelativeTimeField("current_time", 0),
+        OIDTypeField("event_type", 0),
+        LenField("length", None),
+    ]
