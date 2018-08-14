@@ -1,7 +1,5 @@
 from scapy.all import *
 
-from . import NonContainerPacket
-
 """
 The LI field contains the length of the appended data (including all presentation data). The length
 encoding uses the following rules:
@@ -57,48 +55,46 @@ class SessionHeader(Packet):
     name = "SessionHeader"
     fields_desc = [
         SessionHeaderTypeField("type", 0),
-        LIField("length", 0),
+        LIField("length", None),
     ]
 
 
-class AssocReqSessionHeader(NonContainerPacket):
-    name = "AssocReqSessionHeader"
-    fields_desc = [
-        PacketField("SessionHeader", SessionHeader(), SessionHeader),
-    ]
-
-
-class AssocReqSessionData(NonContainerPacket):
+class AssocReqSessionData(Packet):
     name = "AssocReqSessionData"
     fields_desc = [
-        StrField("data", "\x05\x08\x13\x01\x00\x16\x01\x02\x80\x00\x14\x02\x00\x02"),  # Couldn't find a definition in the PIPG, this is copied from the example on page 298
+        StrField("unknown", "\x05\x08\x13\x01\x00\x16\x01\x02\x80\x00\x14\x02\x00\x02"),  # Couldn't find a definition in the PIPG, this is copied from the example on page 298
     ]
 
-class AssocReqPresentationHeader(NonContainerPacket):
-    name = "AssocReqPresentationHeader"
+class AssocReqPresentationHeaderHeader(Packet):  # Split AssocReqPresentationHeader because LIField is *everything* after, not just packet payload length
+    name = "_AssocReqPresentationHeaderHeader"
     fields_desc = [
         # Couldn't find a definition in the PIPG, this is copied from the example on page 298
-        StrField("", ""),
-        LIField("LI", 0),
-        StrField("data", ""),
+        StrField("prefix", "\xc1"),
+        LIField("LI", None),
     ]
 
-class AssocReqUserData(NonContainerPacket): # TODO
-    pass
 
-class AssocReqPresentationTrailer(NonContainerPacket): # TODO
-    pass
-
-
-class AssociationRequestMessage(NonContainerPacket):
-    name = "AssociationRequestMessage"
+class AssocReqPresentationHeaderData(Packet):
+    name = "_AssocReqPresentationHeaderData"
     fields_desc = [
-        PacketField("AssocReqSessionHeader", AssocReqSessionHeader(), AssocReqSessionHeader),
-        PacketField("AssocReqSessionData", AssocReqSessionData(), AssocReqSessionData),
-        PacketField("AssocReqPresentationHeader", AssocReqPresentationHeader(), AssocReqPresentationHeader),
-        PacketField("AssocReqUserData", AssocReqUserData(), AssocReqUserData),
-        PacketField("AssocReqPresentationTrailer", AssocReqPresentationTrailer(), AssocReqPresentationTrailer),
+        StrField("unknown", "\x31\x80\xA0\x80\x80\x01\x01\x00\x00\xA2\x80\xA0\x03\x00\x00\x01\xA4\x80\x30\x80\x02\x01\x01\x06\x04\x52\x01\x00\x01\x30\x80\x06\x02\x51\x01\x00\x00\x00\x00\x30\x80\x02\x01\x02\x06\x0C\x2A\x86\x48\xCE\x14\x02\x01\x00\x00\x00\x01\x01\x30\x80\x06\x0C\x2A\x86\x48\xCE\x14\x02\x01\x00\x00\x00\x02\x01\x00\x00\x00\x00\x00\x00\x61\x80\x30\x80\x02\x01\x01\xA0\x80\x60\x80\xA1\x80\x06\x0C\x2A\x86\x48\xCE\x14\x02\x01\x00\x00\x00\x03\x01\x00\x00\xBE\x80\x28\x80\x06\x0C\x2A\x86\x48\xCE\x14\x02\x01\x00\x00\x00\x01\x01\x02\x01\x02\x81"),  # PIPG-298
     ]
+
+
+class AssocReqUserData(Packet): # PIPG-65
+    pass
+
+
+class AssocReqPresentationTrailer(Packet):
+    name = "AssocReqPresentationTrailer"
+    fields_desc = [
+        StrField("unknown", "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),  # PIPG-298
+    ]
+
+
+def makeAssociationRequest():
+    packet = SessionHeader(type=CN_SPDU_SI) / AssocReqSessionData() / AssocReqPresentationHeaderHeader() / AssocReqPresentationHeaderData() / AssocReqUserData() / AssocReqPresentationTrailer()
+    return raw(packet)
 
 
 ReleaseRequest = "\x09\x18\xC1\x16\x61\x80\x30\x80\x02\x01\x01\xA0\x80\x62\x80\x80\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"  # PIPG-301
