@@ -196,14 +196,6 @@ def MeasurementStateField(name, default):  # PIPG-76
     return FlagsField(name, default, 16, flags)
 
 
-class FLOATTypeField(IntField):  # PIPG-40
-    def i2m(self, pkt, x):
-        return float_type.encode(x)
-
-    def m2i(self, pkt, x):
-        return float_type.decode(x)
-
-
 class NuObsValue(NonContainerPacket):
     name = "NuObsValue"
     fields_desc = [
@@ -226,14 +218,6 @@ class IpAddressInfo(Packet):
         MACField("mac_address", 0),
         IPField("ip_address", 0),
         IPField("subnet_mask", 0),
-    ]
-
-
-class VariableLabel(Packet):
-    name = "VariableLabel"
-    fields_desc = [
-        FieldLenField("length", 0, length_of="value"),
-        StrLenField("value", "", length_from="length"),
     ]
 
 

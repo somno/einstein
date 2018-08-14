@@ -4,6 +4,8 @@ Common Data Types - PIPG-36
 
 from scapy.all import *
 
+import float_type
+
 from .const import *
 
 
@@ -118,3 +120,22 @@ class AttributeList(NonContainerPacket):  # PIPG-39
 
 class String(Packet):  # PIPG-39
     pass  # TODO
+
+
+class VariableLabel(Packet):  # PIPG-40
+    name = "VariableLabel"
+    fields_desc = [
+        FieldLenField("length", 0, length_of="value"),
+        StrLenField("value", "", length_from="length"),
+    ]
+
+
+TextIDField = IntField  # PIPG-40
+
+
+class FLOATTypeField(IntField):  # PIPG-40
+    def i2m(self, pkt, x):
+        return float_type.encode(x)
+
+    def m2i(self, pkt, x):
+        return float_type.decode(x)
