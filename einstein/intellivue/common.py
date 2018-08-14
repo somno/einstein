@@ -72,3 +72,6 @@ class TYPE(NonContainerPacket):  # PIPG-37
         NomPartitionField("partition", 0),
         OIDTypeField("code", 0),
     ]
+
+
+HandleField = ShortField  # PIPG-38

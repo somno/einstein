@@ -137,7 +137,6 @@ class ROERapdu(NonContainerPacket):  # PIPG-45
 
 MdsContextField = ShortField
 
-HandleField = ShortField
 
 class GlbHandle(NonContainerPacket):
     name = "GlbHandle"
