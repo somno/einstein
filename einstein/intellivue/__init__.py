@@ -6,23 +6,10 @@ Based on the Philips Data Export Interface Programming Guide - id 4535 642 59271
 
 from scapy.all import *
 import float_type
+from .common import *
 
 PORT_CONNECTION_INDICATION = 24005  # PIPG-279
 PORT_PROTOCOL = 24105  # PIPG-29
-
-class NonContainerPacket(Packet):
-    """
-    A Packet that cannot contain other things.
-    An IP Packet can contain TCP Packets which can contain e.g. HTTP Packets.
-    This protocol uses field-like things that are more like complex structs.
-    Packet (and PacketField) seem the right tools to represent these,
-    but it's important to indicate to Scapy that they will not contain any other data,
-    via extract_padding (thanks to https://stackoverflow.com/a/38836550/928098)
-    """
-
-    def extract_padding(self, p):
-        return "", p
-
 
 class Nomenclature(Packet):
     name = "Nomenclature"
