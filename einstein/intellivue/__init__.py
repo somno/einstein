@@ -81,16 +81,6 @@ class IpAddressInfo(Packet):
     ]
 
 
-def MDSCreateEventResult():  # PIPG-55
-    name = "MDSCreateEventResult"
-    fields_desc = [
-        PacketField("SPpdu", SPpdu(), SPpdu),
-        PacketField("ROapdus", ROapdus(ro_type=RORS_APDU), ROapdus),
-        PacketField("RORSapdu", RORSapdu(command_type=CMD_CONFIRMED_EVENT_REPORT), RORSapdu),
-        PacketField("EventReportResult", EventReportResult(), EventReportResult),
-    ]
-
-
 class PollMdibDataReq(NonContainerPacket):
     name = "PollMdibDataReq"
     fields_desc = [
