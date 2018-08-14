@@ -249,9 +249,6 @@ class IpAddressInfo(Packet):
     ]
 
 
-PrivateOidField = ShortField  # PIPG-37
-
-
 class VariableLabel(Packet):
     name = "VariableLabel"
     fields_desc = [

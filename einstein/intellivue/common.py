@@ -49,3 +49,6 @@ def OIDTypeField(name, default):  # PIPG-37
     TODO: Implement partition support
     """
     return ShortEnumField(name, default, ENUM_IDENTIFIERS)
+
+
+PrivateOidField = ShortField  # PIPG-37
