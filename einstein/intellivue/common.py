@@ -4,6 +4,8 @@ Common Data Types - PIPG-36
 
 from scapy.all import *
 
+from .const import *
+
 
 class NonContainerPacket(Packet):
     """
@@ -34,3 +36,16 @@ class AbsoluteTime(NonContainerPacket):  # PIPG-36
 
 
 RelativeTimeField = IntField  # PIPG-36
+
+
+def OIDTypeField(name, default):  # PIPG-37
+    """
+    Currently this is a simple ShortEnumField.
+    The reality is more complex.
+    From PIPG-37: "Values for the OIDType (the nomenclature) are listed at the end of the section "Attribute Data Types and Constants Used" on page 75. Independent value ranges (partitions) exist, e.g. for physiological identifiers, alert condition identifiers, units of measurement etc."
+    These partitions overlap: 61696 is NOM_ATTR_NET_ADDR_INFO in NOM_PART_OBJ and NOM_SAT_O2_VEN_CENT in NOM_PART_SCADA.
+    So the actual enum is context dependent, either because it's embedded in a TYPE object, or contextually.
+
+    TODO: Implement partition support
+    """
+    return ShortEnumField(name, default, ENUM_IDENTIFIERS)
