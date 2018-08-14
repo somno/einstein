@@ -8,6 +8,7 @@ from scapy.all import *
 import float_type
 from .const import *
 from .common import *
+from .protocol_command_structure import *
 
 PORT_CONNECTION_INDICATION = 24005  # PIPG-279
 PORT_PROTOCOL = 24105  # PIPG-29
