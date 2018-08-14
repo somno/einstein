@@ -135,25 +135,6 @@ class ROERapdu(NonContainerPacket):  # PIPG-45
     ]
 
 
-MdsContextField = ShortField
-
-
-class GlbHandle(NonContainerPacket):
-    name = "GlbHandle"
-    fields_desc = [
-        MdsContextField("context_id", 0),
-        HandleField("handle", 0),
-    ]
-
-
-class ManagedObjectId(NonContainerPacket):
-    name = "ManagedObjectId"
-    fields_desc = [
-        OIDTypeField("m_obj_class", 0),
-        PacketField("m_obj_inst", GlbHandle(), GlbHandle),
-    ]
-
-
 class EventReportArgument(Packet):
     name = "EventReportArgument"
     fields_desc = [
@@ -253,26 +234,6 @@ class VariableLabel(Packet):
     fields_desc = [
         FieldLenField("length", 0, length_of="value"),
         StrLenField("value", "", length_from="length"),
-    ]
-
-
-class AVAType(Packet):
-    name = "AVAType"
-    fields_desc = [
-        OIDTypeField("attribute_id", 0),
-        LenField("length", None),
-    ]
-
-    def extract_padding(self, p):
-        return p[:self.length], p[self.length:]
-
-
-class AttributeList(NonContainerPacket):
-    name = "AttributeList"
-    fields_desc = [
-        FieldLenField("count", 0, count_of="value"),
-        FieldLenField("length", 0, length_of="value"),
-        PacketListField("value", [], AVAType, length_from=lambda p: p.length, count_from=lambda p: p.count),
     ]
 
 
