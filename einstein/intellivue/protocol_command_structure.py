@@ -132,3 +132,12 @@ class ActionArgument(Packet):  # PIPG-49
         OIDTypeField("action_type", 0),
         LenField("length", None),
     ]
+
+
+class ActionResult(Packet):  # PIPG-49
+    name = "ActionResult"
+    fields_desc = [
+        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
+        OIDTypeField("action_type", 0),
+        LenField("length", None),
+    ]
