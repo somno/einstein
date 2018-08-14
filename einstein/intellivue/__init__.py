@@ -81,24 +81,6 @@ class IpAddressInfo(Packet):
     ]
 
 
-class MDSCreateInfo(NonContainerPacket):  # PIPG-54
-    name = "MDSCreateInfo"
-    fields_desc = [
-        PacketField("managed_object", ManagedObjectId(), ManagedObjectId),
-        PacketField("attribute_list", AttributeList(), AttributeList),
-    ]
-
-
-class MDSCreateEventReport(NonContainerPacket):  # PIPG-54
-    name = "MDSCreateEventReport"
-    fields_desc = [
-        PacketField("SPpdu", SPpdu(), SPpdu),
-        PacketField("ROapdus", ROapdus(), ROapdus),
-        PacketField("ROIVapdu", ROIVapdu(command_type=CMD_CONFIRMED_EVENT_REPORT), ROIVapdu),
-        PacketField("EventReportArgument", EventReportArgument(), EventReportArgument),
-        PacketField("MDSCreateInfo", MDSCreateInfo(), MDSCreateInfo),
-    ]
-
 def MDSCreateEventResult():  # PIPG-55
     name = "MDSCreateEventResult"
     fields_desc = [
