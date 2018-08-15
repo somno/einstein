@@ -42,6 +42,14 @@ bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_
 bind_layers(AVAType, NuObsValue, attribute_id=NOM_ATTR_NU_VAL_OBS)
 bind_layers(AVAType, AbsoluteTime, attribute_id=NOM_ATTR_TIME_STAMP_ABS)
 bind_layers(AVAType, IpAddressInfo, attribute_id=NOM_ATTR_NET_ADDR_INFO)
+bind_layers(AVAType, PollProfileSupport, attribute_id=NOM_POLL_PROFILE_SUPPORT)
+bind_layers(AVAType, PollProfileExt, attribute_id=NOM_ATTR_POLL_PROFILE_EXT)
+
+bind_layers(SessionHeader, AssocReqSessionData, type=CN_SPDU_SI)
+bind_layers(AssocReqSessionData, AssocReqPresentationHeaderHeader)
+bind_layers(AssocReqPresentationHeaderHeader, AssocReqPresentationHeaderData)
+bind_layers(AssocReqPresentationHeaderData, AssocReqUserData)
+bind_layers(AssocReqUserData, AssocReqPresentationTrailer)
 
 
 if __name__ == '__main__':

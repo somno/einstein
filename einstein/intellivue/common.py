@@ -112,8 +112,8 @@ class AVAType(Packet):  # PIPG-38
 class AttributeList(NonContainerPacket):  # PIPG-39
     name = "AttributeList"
     fields_desc = [
-        FieldLenField("count", 0, count_of="value"),
-        FieldLenField("length", 0, length_of="value"),
+        FieldLenField("count", None, count_of="value"),
+        FieldLenField("length", None, length_of="value"),
         PacketListField("value", [], AVAType, length_from=lambda p: p.length, count_from=lambda p: p.count),
     ]
 

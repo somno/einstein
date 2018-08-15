@@ -9,12 +9,9 @@ import socket
 import intellivue as packets
 import treq
 import web
-import vscapture
 from util import json_serialize
 import attr
 import structlog
-
-ASSOCIATION_REQUEST_MESSAGE = vscapture.aarq_msg
 
 log = structlog.get_logger()
 
@@ -79,7 +76,32 @@ class IntellivueInterface(DatagramProtocol):
 
         if host not in self.associations:
             log.info("Initiating Association!", mac_address=mac_address, host=host)
-            self.transport.write(ASSOCIATION_REQUEST_MESSAGE, (host, packets.PORT_PROTOCOL))
+            self.sendAssociationRequest((host, packets.PORT_PROTOCOL))
+
+
+    def sendAssociationRequest(self, (host, port)):
+        associationRequest = packets.SessionHeader(type=packets.CN_SPDU_SI)
+        associationRequest /= packets.AssocReqSessionData()
+        associationRequest /= packets.AssocReqPresentationHeaderHeader()
+        associationRequest /= packets.AssocReqPresentationHeaderData()
+        associationRequest /= packets.AssocReqUserData(
+            MDSEUserInfoStd=packets.MDSEUserInfoStd(
+                supported_aprofiles=packets.AttributeList(
+                    value=[
+                        packets.AVAType(
+                            attribute_id=packets.NOM_POLL_PROFILE_SUPPORT,
+                        ) /
+                        packets.PollProfileSupport(),
+                    ],
+                ),
+            ),
+        )
+        associationRequest /= packets.AssocReqPresentationTrailer()
+
+        associationRequest.show()
+        associationRequest.show2()
+
+        self.transport.write(str(associationRequest), (host, port))
 
 
     def handleAssociationMessage(self, data, (host, port)):
