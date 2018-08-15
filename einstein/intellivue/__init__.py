@@ -43,6 +43,7 @@ bind_layers(AVAType, NuObsValue, attribute_id=NOM_ATTR_NU_VAL_OBS)
 bind_layers(AVAType, AbsoluteTime, attribute_id=NOM_ATTR_TIME_STAMP_ABS)
 bind_layers(AVAType, IpAddressInfo, attribute_id=NOM_ATTR_NET_ADDR_INFO)
 bind_layers(AVAType, PollProfileSupport, attribute_id=NOM_POLL_PROFILE_SUPPORT)
+bind_layers(AVAType, PollProfileExt, attribute_id=NOM_ATTR_POLL_PROFILE_EXT)
 
 
 if __name__ == '__main__':
