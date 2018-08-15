@@ -125,11 +125,11 @@ COLD_START = 0x20000000
 class MDSEUserInfoStd(Packet):  # PIPG-68
     name = "MDSEUserInfoStd"
     fields_desc = [
-        IntField("protocol_version", MDDL_VERSION1),
-        IntField("nomenclature_version", NOMEN_VERSION),
-        IntField("functional_units", None),
-        IntField("system_type", SYST_CLIENT),
-        IntField("startup_mode", WARM_START),
+        XIntField("protocol_version", MDDL_VERSION1),
+        XIntField("nomenclature_version", NOMEN_VERSION),
+        XIntField("functional_units", None),
+        XIntField("system_type", SYST_CLIENT),
+        XIntField("startup_mode", WARM_START),
         PacketField("option_list", AttributeList(), AttributeList),
         PacketField("supported_aprofiles", AttributeList(), AttributeList),
     ]
