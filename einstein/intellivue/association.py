@@ -143,6 +143,29 @@ class AssocReqUserData(Packet): # PIPG-65
     ]
 
 
+POLL_PROFILE_REV_0 = 0x80000000  # PIPG-69
+
+
+PollProfileOptionsField = XIntField  # PIPG-70 TODO Use some kind of flag field
+
+
+P_OPT_DYN_CREATE_OBJECTS = 0x40000000
+P_OPT_DYN_DELETE_OBJECTS = 0x20000000
+
+
+class PollProfileSupport(Packet):  # PIPG-69
+    name = "PollProfileSupport"
+    fields_desc = [
+        XIntField("poll_profile_revision", POLL_PROFILE_REV_0),
+        RelativeTimeField("min_poll_period", 2500),  # Experimental default
+        IntField("max_mtu_rx", 2500),  # Experimental default
+        IntField("max_mtu_tx", 1000),  # Experimental default
+        XIntField("max_bw_tx", 0xffffffff),  # The IntelliVue monitor fills in the maximum transmit bandwidth it uses, the value 0xffffffff indicates that no estimation is possible (this is the default).
+        PollProfileOptionsField("options", P_OPT_DYN_CREATE_OBJECTS | P_OPT_DYN_DELETE_OBJECTS),
+        PacketField("optional_packages", AttributeList(), AttributeList),
+    ]
+
+
 ASSOC_REQ_PRESENTATION_TRAILER = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 
 

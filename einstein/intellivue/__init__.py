@@ -42,6 +42,7 @@ bind_layers(EventReportArgument, AttributeList, event_type=NOM_NOTI_MDS_CONNECT_
 bind_layers(AVAType, NuObsValue, attribute_id=NOM_ATTR_NU_VAL_OBS)
 bind_layers(AVAType, AbsoluteTime, attribute_id=NOM_ATTR_TIME_STAMP_ABS)
 bind_layers(AVAType, IpAddressInfo, attribute_id=NOM_ATTR_NET_ADDR_INFO)
+bind_layers(AVAType, PollProfileSupport, attribute_id=NOM_POLL_PROFILE_SUPPORT)
 
 
 if __name__ == '__main__':
