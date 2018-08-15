@@ -67,14 +67,14 @@ ASSOC_REQ_SESSION_DATA = "\x05\x08\x13\x01\x00\x16\x01\x02\x80\x00\x14\x02\x00\x
 class AssocReqSessionData(Packet):
     name = "AssocReqSessionData"
     fields_desc = [
-        StrField("unknown", ASSOC_REQ_SESSION_DATA),  # Couldn't find a definition in the PIPG, this is copied from the example on page 298
+        StrFixedLenField("unknown", ASSOC_REQ_SESSION_DATA, length=len(ASSOC_REQ_SESSION_DATA)),  # Couldn't find a definition in the PIPG, this is copied from the example on page 298
     ]
 
 class AssocReqPresentationHeaderHeader(Packet):  # Split AssocReqPresentationHeader because LIField is *everything* after, not just packet payload length
-    name = "_AssocReqPresentationHeaderHeader"
+    name = "AssocReqPresentationHeaderHeader"
     fields_desc = [
         # Couldn't find a definition in the PIPG, this is copied from the example on page 298
-        StrField("prefix", "\xc1"),
+        XByteField("prefix", 0xc1),
         LIField("LI", None),
     ]
 
@@ -85,7 +85,7 @@ ASSOC_REQ_PRESENTATION_HEADER_DATA = "\x31\x80\xA0\x80\x80\x01\x01\x00\x00\xA2\x
 class AssocReqPresentationHeaderData(Packet):
     name = "AssocReqPresentationHeaderData"
     fields_desc = [
-        StrField("unknown", ASSOC_REQ_PRESENTATION_HEADER_DATA),  # PIPG-298
+        StrFixedLenField("unknown", ASSOC_REQ_PRESENTATION_HEADER_DATA, length=len(ASSOC_REQ_PRESENTATION_HEADER_DATA)),  # PIPG-298
     ]
 
 
