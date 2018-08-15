@@ -95,7 +95,23 @@ The ASNLength contains the length of the MDSEUserInfoStd. It uses the following 
 - if the length is less or equal to 127, ASNLength is one byte, containing the actual length.
 - if the length is greater than 127, ASNLength is several bytes long. The most significant bit (bit 0) of the first byte is set to 1, the bits 1 to 7 indicate the number of bytes which are appended to encode the actual length.
 """
-ASNLengthField = FieldLenField  # PIPG-68 TODO: Encode this properly
+class ASNLengthField(FieldLenField):  # PIPG-68
+
+    def addfield(self, pkt, s, val):
+        val = self.i2m(pkt, val)
+        if val < 128:
+            b = struct.pack("B", val)
+        else:
+            raise NotImplementedError
+        return s + b
+
+    def getfield(self, pkt, s):
+        v = struct.unpack("B", s[0])[0]
+        if v & (1<<7):
+            v &= ~(1<<7)
+            raise NotImplementedError
+        else:
+            return s[1:], self.m2i(pkt, v)
 
 
 MDDL_VERSION1 = 0x80000000  # PIPG-68
