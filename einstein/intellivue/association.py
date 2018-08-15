@@ -1,5 +1,7 @@
 from scapy.all import *
 
+from common import *
+
 """
 The LI field contains the length of the appended data (including all presentation data). The length
 encoding uses the following rules:
@@ -96,9 +98,24 @@ The ASNLength contains the length of the MDSEUserInfoStd. It uses the following 
 ASNLengthField = FieldLenField  # PIPG-68 TODO: Encode this properly
 
 
+MDDL_VERSION1 = 0x80000000  # PIPG-68
+NOMEN_VERSION = 0x40000000  # PIPG-68
+SYST_CLIENT = 0x80000000  # PIPG-69
+SYST_SERVER = 0x00800000  # PIPG-69
+HOT_START = 0x80000000
+WARM_START = 0x40000000
+COLD_START = 0x20000000
+
 class MDSEUserInfoStd(Packet):  # PIPG-68
     name = "MDSEUserInfoStd"
     fields_desc = [
+        IntField("protocol_version", MDDL_VERSION1),
+        IntField("nomenclature_version", NOMEN_VERSION),
+        IntField("functional_units", None),
+        IntField("system_type", SYST_CLIENT),
+        IntField("startup_mode", WARM_START),
+        PacketField("option_list", AttributeList(), AttributeList),
+        PacketField("supported_aprofiles", AttributeList(), AttributeList),
     ]
 
 
