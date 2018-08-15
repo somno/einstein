@@ -15,7 +15,7 @@ class Monitor(object):
 @attr.s
 class Observation(object):
     physio_id = attr.ib(default="")
-    # state
+    state = attr.ib(default=[])
     unit_code = attr.ib(default="")
     value = attr.ib(default=0)
 

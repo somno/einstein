@@ -202,9 +202,13 @@ class IntellivueInterface(DatagramProtocol):
                         if attribute.attribute_id == packets.NOM_ATTR_NU_VAL_OBS:
                             obsValue = attribute[packets.NuObsValue]
                             if obsValue.measurementIsValid():
+                                states = []
+                                for state in packets.ENUM_MEASUREMENT_STATE.keys():
+                                    if obsValue.state & state:
+                                        states.append(packets.ENUM_MEASUREMENT_STATE[state])
                                 observation = api.Observation(
                                     physio_id=packets.ENUM_IDENTIFIERS[obsValue.physio_id],
-                                    # TODO Encode "state": obsValue.state,
+                                    state=states,
                                     unit_code=packets.ENUM_IDENTIFIERS[obsValue.unit_code],
                                     value=obsValue.value,
                                 )
