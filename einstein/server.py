@@ -101,7 +101,18 @@ class IntellivueInterface(DatagramProtocol):
                         packets.AVAType(
                             attribute_id=packets.NOM_POLL_PROFILE_SUPPORT,
                         ) /
-                        packets.PollProfileSupport(),
+                        packets.PollProfileSupport(
+                            optional_packages=packets.AttributeList(
+                                value=[
+                                    packets.AVAType(
+                                        attribute_id=packets.NOM_ATTR_POLL_PROFILE_EXT,
+                                    ) /
+                                    packets.PollProfileExt(
+                                        options=packets.POLL_EXT_PERIOD_NU_1SEC|packets.POLL_EXT_PERIOD_RTSA|packets.POLL_EXT_ENUM,
+                                    ),
+                                ],
+                            ),
+                        ),
                     ],
                 ),
             ),
