@@ -81,3 +81,24 @@ class PollMdibDataReply(Packet):  # PIPG-56
         OIDTypeField("polled_attr_grp", 0),
         PacketField("poll_info_list", PollInfoList(), PollInfoList),
     ]
+
+class PollMdibDataReqExt(Packet):  # PIPG-59
+    name = "PollMdibDataReqExt"
+    fields_desc = [
+        ShortField("poll_number", 0),
+        PacketField("polled_obj_type", TYPE(), TYPE),
+        OIDTypeField("polled_attr_grp", None),
+        PacketField("poll_ext_attr", AttributeList(), AttributeList),
+    ]
+
+class PollMdibDataReplyExt(Packet):  # PIPG-62
+    name = "PollMdibDataReplyExt"
+    fields_desc = [
+        ShortField("poll_number", None),
+        ShortField("sequence_no", None),
+        RelativeTimeField("rel_time_stamp", None),
+        PacketField("abs_time_stamp", AbsoluteTime(), AbsoluteTime),
+        PacketField("polled_obj_type", TYPE(), TYPE),
+        OIDTypeField("polled_attr_grp", 0),
+        PacketField("poll_info_list", PollInfoList(), PollInfoList),
+    ]
