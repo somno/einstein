@@ -12,6 +12,7 @@ import web
 from util import json_serialize
 import attr
 import structlog
+from scapy.utils import wrpcap
 
 log = structlog.get_logger()
 
@@ -30,7 +31,7 @@ class IntellivueInterface(DatagramProtocol):
     and instead an internal DIY "ARP-alike" mapping is maintained.
     """
 
-    def __init__(self, monitors=None, subscriptions=None):
+    def __init__(self, monitors=None, subscriptions=None, dumpfilename=None):
         self.monitors = monitors
         if self.monitors is None:
             self.monitors = {}  # Mapping of MAC -> api.Monitor
@@ -38,6 +39,8 @@ class IntellivueInterface(DatagramProtocol):
         self.subscriptions = subscriptions
         if self.subscriptions is None:
             self.subscriptions = {}  # Mapping of SubscriptionId -> Subscription
+
+        self.dumpfilename = dumpfilename
 
         self.host_to_mac = {}
         self.associations = set()
@@ -56,9 +59,16 @@ class IntellivueInterface(DatagramProtocol):
                 self.handleAssociationMessage(data, (host, port))
 
 
+    def logPacket(self, packet):
+        if self.dumpfilename is not None:
+            wrpcap(self.dumpfilename, packet, append=True)
+
+
     def handleConnectionIndication(self, data, (host, port)):
         ci = packets.ConnectIndication()
         ci.dissect(data)
+
+        self.logPacket(ci)
 
         mac_address = ""
         if packets.IpAddressInfo in ci:
@@ -111,6 +121,8 @@ class IntellivueInterface(DatagramProtocol):
         associationMessage.dissect(data)
         associationMessage.show()
 
+        self.logPacket(associationMessage)
+
         t = associationMessage.type
         if t == packets.AC_SPDU_SI:
             log.info("Received Association Confirmation!", host=host)
@@ -126,6 +138,8 @@ class IntellivueInterface(DatagramProtocol):
         log.debug("Received Protocol message, handling")
         message = packets.SPpdu()
         message.dissect(data)
+
+        self.logPacket(message)
 
         if packets.ROIVapdu in message:
             roivapdu = message[packets.ROIVapdu]
@@ -269,7 +283,7 @@ if __name__ == '__main__':
     w = web.EinsteinWebServer(monitors=monitors, subscriptions=subscriptions).app.resource()
     import os
     reactor.listenTCP(int(os.getenv("PORT", 8080)), server.Site(w))
-    i = IntellivueInterface(monitors=monitors, subscriptions=subscriptions)
+    i = IntellivueInterface(monitors=monitors, subscriptions=subscriptions, dumpfilename=os.getenv("DUMPFILENAME"))
     reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, i)
 
     log.info("Starting...")
