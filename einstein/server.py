@@ -205,9 +205,9 @@ class IntellivueInterface(DatagramProtocol):
         pollAction /= packets.ROIVapdu(command_type=packets.CMD_CONFIRMED_ACTION)
         pollAction /= packets.ActionArgument(
             managed_object=packets.ManagedObjectId(m_obj_class=packets.NOM_MOC_VMS_MDS),
-            action_type=packets.NOM_ACT_POLL_MDIB_DATA,
+            action_type=packets.NOM_ACT_POLL_MDIB_DATA_EXT,
         )
-        pollAction /= packets.PollMdibDataReq(
+        pollAction /= packets.PollMdibDataReqExt(
             polled_obj_type=packets.TYPE(
                 partition=packets.NOM_PART_OBJ,
                 code=packets.NOM_MOC_VMO_METRIC_NU,  # Numerics, i.e. numbers about attached patient
