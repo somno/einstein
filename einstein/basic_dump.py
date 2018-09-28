@@ -1,15 +1,16 @@
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 import socket
-import packets
+import intellivue
 
 class SomnoDeviceDiscoveryDumper(DatagramProtocol):
 
     def datagramReceived(self, data, (host, port)):
-        ci = packets.ConnectIndication()
+        ci = intellivue.ConnectIndication()
         ci.dissect(data)
         ci.show()
 
 
-reactor.listenUDP(packets.PORT_CONNECTION_INDICATION, SomnoDeviceDiscoveryDumper())
-reactor.run()
+if __name__ == "__main__":
+    reactor.listenUDP(intellivue.PORT_CONNECTION_INDICATION, SomnoDeviceDiscoveryDumper())
+    reactor.run()

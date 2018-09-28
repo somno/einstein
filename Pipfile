@@ -4,10 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+pytest-cov = "*"
 
 [packages]
 twisted = "*"
 scapy = "*"
+pytest = "*"
+klein = "*"
+treq = "*"
+attrs = "*"
+structlog = "*"
 
 [requires]
 python_version = "2.7"

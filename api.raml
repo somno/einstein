@@ -1,0 +1,114 @@
+#%RAML 1.0
+title: Somno Einstein API
+mediaType: application/json
+
+types:
+  Monitor:
+    type: object
+    properties:
+      mac_address:
+        description: "The MAC Address of the monitor, encoded as six groups of two lower-case hexadecimal digits separated by colons"
+        required: true
+        type: string
+  Observation:
+    description: "A measurement, e.g. a pulse of 75 bpm"
+    type: object
+    properties:
+      physio_id:
+        description: "Code identifying the represented value"
+        type: string
+      state:
+        description: "TODO Bit Field / flags describing state"
+        type: any
+      unit_code:
+        description: "Code identifying the units of measure"
+        type: string
+      value:
+        description: "The actual value of the measurement"
+        type: number
+  Payload:
+    description: "The payload of the webhook - metadata and list of observations"
+    type: object
+    properties:
+      monitor_id:
+        description: "The MAC Address of the monitor"
+        type: string
+      datetime:
+        type: datetime
+      observations:
+        type: Observation[]
+  Subscription:
+    type: object
+    properties:
+      subscription_id:
+        type: string
+      monitor_id:
+        type: string
+      url:
+        type: string
+
+
+/api:
+  /monitors:
+    get:
+      responses:
+        200:
+          body:
+            Monitor[]
+  /monitor:
+    /{mac_address}:
+      /subscribe:
+        post:
+          description: "Subscribe to updates from the given monitor"
+          body:
+            example: |
+              {
+                "url": "https://example.com/callback/"
+              }
+          responses:
+            201:
+              body:
+                example: |
+                  { "subscription_id": "loremipsum" }
+  /subscribe:
+    /{subscription_id}:
+      delete:
+/debug:
+  description: "Testing utilities etc. - anything here might change"
+  /subscriptions:
+    get:
+      responses:
+        200:
+          body:
+            Subscription[]
+  /examples:
+    /observation:
+      get:
+        description: "Returns an example Observation"
+        responses:
+          200:
+            body:
+              type: Observation
+    /payload:
+      get:
+        description: "Returns an example Payload"
+        responses:
+          200:
+            body:
+              type: Payload
+              example: |
+                {
+                  "observations":
+                    [
+                      {
+                        "state": [
+                          "DEMO_DATA"
+                        ],
+                        "physio_id": "NOM_PLETH_PULS_RATE",
+                        "value": 42,
+                        "unit_code": "NOM_DIM_BEAT_PER_MIN"
+                      }
+                    ],
+                  "monitor_id": "01:23:45:67:89:ab",
+                  "datetime": "2018-07-31T13:50:35.071597"
+                }
