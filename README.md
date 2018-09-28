@@ -29,3 +29,9 @@ It needed a name,
 Kristian Glass built the initial version,
 it communicates with Philips monitors,
 and Philip Glass wrote Einstein on the Beach...
+
+## Running tests
+
+You can run the unittests with
+
+    make test
