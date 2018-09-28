@@ -29,3 +29,10 @@ It needed a name,
 Kristian Glass built the initial version,
 it communicates with Philips monitors,
 and Philip Glass wrote Einstein on the Beach...
+
+
+## How to run this software
+
+    pipenv install
+    pipenv shell
+    python einstein/server.py
