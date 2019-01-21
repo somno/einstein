@@ -1,6 +1,6 @@
 from scapy.all import *
 
-from common import *
+from .common import *
 
 """
 The LI field contains the length of the appended data (including all presentation data). The length
