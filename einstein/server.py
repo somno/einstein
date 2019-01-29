@@ -47,16 +47,16 @@ class IntellivueInterface(DatagramProtocol):
         self.connections = set()
 
 
-    def datagramReceived(self, data, (host, port)):
-        log.debug("Datagram received!", host=host, port=port)
+    def datagramReceived(self, data, addr):
+        log.debug("Datagram received!", addr=addr)
 
         if port == packets.PORT_CONNECTION_INDICATION:
-            self.handleConnectionIndication(data, (host, port))
+            self.handleConnectionIndication(data, addr)
         else:
             if data[0:2] == '\xe1\x00':  # PIPG-42
-                self.handleProtocolMessage(data, (host, port))
+                self.handleProtocolMessage(data, addr)
             else:
-                self.handleAssociationMessage(data, (host, port))
+                self.handleAssociationMessage(data, addr)
 
 
     def logPacket(self, packet):
@@ -64,7 +64,7 @@ class IntellivueInterface(DatagramProtocol):
             wrpcap(self.dumpfilename, packet, append=True)
 
 
-    def handleConnectionIndication(self, data, (host, port)):
+    def handleConnectionIndication(self, data, addr):
         ci = packets.ConnectIndication()
         ci.dissect(data)
 
@@ -74,11 +74,12 @@ class IntellivueInterface(DatagramProtocol):
         if packets.IpAddressInfo in ci:
             mac_address = ci[packets.IpAddressInfo].mac_address
         else:
-            log.warning("Could not extract MAC address from ConnectionIndication packet", host=host, port=port)
+            log.warning("Could not extract MAC address from ConnectionIndication packet", addr=addr)
             return
 
-        log.info("Received ConnectionIndication message", mac_address=mac_address, host=host, port=port)
+        log.info("Received ConnectionIndication message", mac_address=mac_address, addr=addr)
 
+        host, port = addr
         self.host_to_mac[host] = mac_address
 
         if self.monitors is not None:
@@ -89,7 +90,7 @@ class IntellivueInterface(DatagramProtocol):
             self.sendAssociationRequest((host, packets.PORT_PROTOCOL))
 
 
-    def sendAssociationRequest(self, (host, port)):
+    def sendAssociationRequest(self, addr):
         associationRequest = packets.SessionHeader(type=packets.CN_SPDU_SI)
         associationRequest /= packets.AssocReqSessionData()
         associationRequest /= packets.AssocReqPresentationHeaderHeader()
@@ -122,11 +123,11 @@ class IntellivueInterface(DatagramProtocol):
         associationRequest.show()
         associationRequest.show2()
 
-        self.transport.write(str(associationRequest), (host, port))
+        self.transport.write(str(associationRequest), addr)
 
 
-    def handleAssociationMessage(self, data, (host, port)):
-        log.info("Received Association message", host=host)
+    def handleAssociationMessage(self, data, addr):
+        log.info("Received Association message", addr=addr)
 
         associationMessage = packets.SessionHeader()
         associationMessage.dissect(data)
@@ -135,6 +136,7 @@ class IntellivueInterface(DatagramProtocol):
         self.logPacket(associationMessage)
 
         t = associationMessage.type
+        host, _ = addr
         if t == packets.AC_SPDU_SI:
             log.info("Received Association Confirmation!", host=host)
             self.associations.add(host)
@@ -145,18 +147,20 @@ class IntellivueInterface(DatagramProtocol):
         # TODO Properly validate response, rejection, etc.
 
 
-    def handleProtocolMessage(self, data, (host, port)):
+    def handleProtocolMessage(self, data, addr):
         log.debug("Received Protocol message, handling")
         message = packets.SPpdu()
         message.dissect(data)
 
         self.logPacket(message)
 
+        host, _ = addr
+
         if packets.ROIVapdu in message:
             roivapdu = message[packets.ROIVapdu]
 
             if roivapdu.command_type == packets.CMD_CONFIRMED_EVENT_REPORT:
-                log.info("Received MDSCreateEventReport, sending MDSCreateEventResult", host=host, port=port)
+                log.info("Received MDSCreateEventReport, sending MDSCreateEventResult", addr=addr)
 
                 # Ok! Now to reply!
 
@@ -171,11 +175,11 @@ class IntellivueInterface(DatagramProtocol):
                     event_type=packets.NOM_NOTI_MDS_CREAT,
                 )
 
-                self.transport.write(str(mdsceResult), (host, port))
+                self.transport.write(str(mdsceResult), addr)
 
                 self.connections.add(host)
             else:
-                log.warning("Unknown command_type in roivapdu!", host=host, port=port, roivapdu=roivapdu)
+                log.warning("Unknown command_type in roivapdu!", addr=addr, roivapdu=roivapdu)
                 roivapdu.show()
         elif packets.ROLRSapdu in message:
             # TODO Implement support for rolling up Remote Operation Linked Results
@@ -199,7 +203,7 @@ class IntellivueInterface(DatagramProtocol):
             self.pollForData((host, packets.PORT_PROTOCOL))
 
 
-    def pollForData(self, (host, port)):
+    def pollForData(self, addr):
         pollAction = packets.SPpdu()  # PIPG-55
         pollAction /= packets.ROapdus(ro_type=packets.ROIV_APDU)
         pollAction /= packets.ROIVapdu(command_type=packets.CMD_CONFIRMED_ACTION)
@@ -217,7 +221,7 @@ class IntellivueInterface(DatagramProtocol):
 
         # pollAction.show2()
 
-        self.transport.write(str(pollAction), (host, port))
+        self.transport.write(str(pollAction), addr)
 
 
     def displayResult(self, message):

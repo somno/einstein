@@ -5,7 +5,7 @@ import intellivue
 
 class SomnoDeviceDiscoveryDumper(DatagramProtocol):
 
-    def datagramReceived(self, data, (host, port)):
+    def datagramReceived(self, data, addr):
         ci = intellivue.ConnectIndication()
         ci.dissect(data)
         ci.show()
