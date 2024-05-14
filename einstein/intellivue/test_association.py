@@ -1,4 +1,4 @@
-from association import *
+from .association import *
 
 def test_association():
     pass

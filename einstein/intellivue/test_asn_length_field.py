@@ -1,4 +1,4 @@
-from association import AssocReqUserData, MDSEUserInfoStd
+from .association import AssocReqUserData, MDSEUserInfoStd
 
 
 def test_trivial_construction():
