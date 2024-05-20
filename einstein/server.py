@@ -49,6 +49,7 @@ class IntellivueInterface(DatagramProtocol):
 
     def datagramReceived(self, data, addr):
         log.debug("Datagram received!", addr=addr)
+        host, port = addr
 
         if port == packets.PORT_CONNECTION_INDICATION:
             self.handleConnectionIndication(data, addr)
