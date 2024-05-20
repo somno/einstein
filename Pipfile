@@ -5,6 +5,7 @@ name = "pypi"
 
 [dev-packages]
 pytest-cov = "*"
+flake8 = "*"
 
 [packages]
 twisted = "*"
